@@ -65,20 +65,22 @@ export default function NotificationDetailsScreen() {
     })
 
   const handleAcceptRoute = async () => {
+    console.log('Accepting route')
+    console.log(routeId, fuelPlanId, routeData?.sectionId)
     if (
       routeId &&
       fuelPlanId &&
-      fuelPlanValidatorId &&
-      fuelRouteVersionId &&
+      // fuelPlanValidatorId &&
+      // fuelRouteVersionId &&
       routeData?.sectionId
     ) {
       try {
         await acceptRouteMutation({
           routeId,
+          routeSectionId: routeData.sectionId,
           fuelPlanId,
-          fuelPlanValidatorId,
-          fuelRouteVersionId,
-          sectionId: routeData.sectionId,
+          fuelPlanValidatorId: fuelPlanValidatorId ?? '',
+          fuelRouteVersionId: fuelRouteVersionId ?? '',
         })
       } catch (error) {
         console.error('Failed to accept route:', error)
@@ -87,21 +89,27 @@ export default function NotificationDetailsScreen() {
   }
 
   const handleDeclineRoute = async () => {
+    console.log('Declining route')
+    console.log(
+      routeId,
+      fuelPlanId,
+
+      routeData?.sectionId,
+    )
     if (
       routeId &&
       fuelPlanId &&
-      fuelPlanValidatorId &&
-      fuelRouteVersionId &&
+      // fuelPlanValidatorId &&
+      // fuelRouteVersionId &&
       routeData?.sectionId
     ) {
       try {
         await declineRouteMutation({
           routeId,
+          routeSectionId: routeData.sectionId,
           fuelPlanId,
-          fuelPlanValidatorId,
-          fuelRouteVersionId,
-          sectionId: routeData.sectionId,
-          reason: 'Driver declined',
+          fuelPlanValidatorId: fuelPlanValidatorId ?? '',
+          fuelRouteVersionId: fuelRouteVersionId ?? '',
         })
       } catch (error) {
         console.error('Failed to decline route:', error)
@@ -111,9 +119,12 @@ export default function NotificationDetailsScreen() {
 
   useEffect(() => {
     if (routeId) {
-      getRouteById({ routeId })
+      getRouteById({
+        routeId,
+        ...(fuelPlanId && { fuelPlanId }),
+      })
     }
-  }, [routeId, getRouteById])
+  }, [routeId, fuelPlanId, getRouteById])
 
   // Memoize drive time and miles display for consistency and performance
   const displayDriveTime = useMemo(() => {

@@ -6,6 +6,7 @@ export const getRoutePayloadSchema = z.object({
 
 export const getRouteByIdPayloadSchema = z.object({
   routeId: z.string(),
+  fuelPlanId: z.string().optional(),
 })
 
 export const getAssignedRouteByTruckIdPayloadSchema = z.object({
@@ -20,19 +21,18 @@ export const assignRoutePayloadSchema = z.object({
 
 export const acceptRoutePayloadSchema = z.object({
   routeId: z.string(),
+  routeSectionId: z.string(),
   fuelPlanId: z.string(),
   fuelPlanValidatorId: z.string(),
   fuelRouteVersionId: z.string(),
-  sectionId: z.string(),
 })
 
 export const declineFuelRoutePayloadSchema = z.object({
   routeId: z.string(),
+  routeSectionId: z.string(),
   fuelPlanId: z.string(),
   fuelPlanValidatorId: z.string(),
   fuelRouteVersionId: z.string(),
-  sectionId: z.string(),
-  reason: z.string(),
 })
 
 export const completeRoutePayloadSchema = z.object({

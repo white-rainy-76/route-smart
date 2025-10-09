@@ -106,6 +106,9 @@ export function usePushNotifications() {
 
       setNotification({
         routeId: notificationData.RouteId,
+        fuelPlanId: notificationData.FuelPlanId,
+        fuelPlanValidatorId: notificationData.FuelPlanValidatorId,
+        fuelRouteVersionId: notificationData.FuelRouteVersionId,
         title: 'Route from manager',
         message: 'When accepting route -',
       })

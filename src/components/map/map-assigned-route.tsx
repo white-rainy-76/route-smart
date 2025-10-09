@@ -5,6 +5,7 @@ import { ActivityIndicator, View } from 'react-native'
 import { LatLng, Marker, Polyline } from 'react-native-maps'
 import MapBase from './map-base'
 import { GasStationMarker } from './ui/markers/gas-station-marker'
+import { TruckMarker } from './ui/markers/truck-marker'
 
 type MapAssignedRouteProps = {
   routeData: AssignedRouteWithPassedRouteData
@@ -116,43 +117,15 @@ export const MapAssignedRoute = ({
         <MapBase setMapReady={handleMapReady}>
           {/* Real-time truck position */}
           {truckPosition && (
-            <Marker coordinate={truckPosition} anchor={{ x: 0.5, y: 0.5 }}>
-              <View
-                style={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: 8,
-                  backgroundColor: '#26b910',
-                  borderColor: '#fff',
-                  borderWidth: 3,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 4,
-                  elevation: 5,
-                }}
-              />
+            <Marker coordinate={truckPosition} anchor={{ x: 0.5, y: 0.95 }}>
+              <TruckMarker isActive={true} />
             </Marker>
           )}
 
           {/* Current location (if no truck data) */}
           {!truckPosition && currentLocation && (
-            <Marker coordinate={currentLocation} anchor={{ x: 0.5, y: 0.5 }}>
-              <View
-                style={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: 8,
-                  backgroundColor: '#26b910',
-                  borderColor: '#fff',
-                  borderWidth: 3,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 4,
-                  elevation: 5,
-                }}
-              />
+            <Marker coordinate={currentLocation} anchor={{ x: 0.5, y: 0.95 }}>
+              <TruckMarker isActive={false} />
             </Marker>
           )}
 
@@ -194,14 +167,14 @@ export const MapAssignedRoute = ({
         )}
 
         {/* Truck movement path - green line */}
-        {routePath.length > 1 && (
+        {/* {routePath.length > 1 && (
           <Polyline
             coordinates={routePath}
             strokeWidth={3}
             strokeColor="#26b910"
             geodesic={false}
           />
-        )}
+        )} */}
 
         {/* Real-time truck position */}
         {truckPosition && (

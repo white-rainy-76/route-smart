@@ -23,7 +23,6 @@ interface MapBaseProps {
   onBottomSheetClose?: () => void
 }
 
-const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window')
 const DEFAULT_MAP_HEIGHT = 300
 
 const MapBase: React.FC<MapBaseProps> = ({
@@ -36,6 +35,9 @@ const MapBase: React.FC<MapBaseProps> = ({
 }) => {
   const { theme } = useTheme()
   const [isFullScreen, setIsFullScreen] = useState(false)
+  const [screenDimensions, setScreenDimensions] = useState(
+    Dimensions.get('window'),
+  )
   const mapRef = useRef<MapView>(null)
   const bottomSheetRef = useRef<BottomSheet>(null)
   const insets = useSafeAreaInsets()
@@ -125,6 +127,15 @@ const MapBase: React.FC<MapBaseProps> = ({
     }
   }, [bottomSheetContent])
 
+  // Listen for orientation changes
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setScreenDimensions(window)
+    })
+
+    return () => subscription?.remove()
+  }, [])
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -143,10 +154,18 @@ const MapBase: React.FC<MapBaseProps> = ({
   const renderMap = useCallback(
     () => (
       <MapView
+        key={`map-${screenDimensions.width}-${screenDimensions.height}`}
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         onMapReady={handleMapReady}
-        style={isFullScreen ? styles.fullScreenMap : styles.map}
+        style={
+          isFullScreen
+            ? {
+                height: screenDimensions.height,
+                width: screenDimensions.width,
+              }
+            : styles.map
+        }
         initialRegion={initialRegion || defaultRegion}
         mapType="standard"
         customMapStyle={mapStyle}
@@ -163,6 +182,7 @@ const MapBase: React.FC<MapBaseProps> = ({
     ),
     [
       isFullScreen,
+      screenDimensions,
       initialRegion,
       defaultRegion,
       handleMapReady,
@@ -291,10 +311,6 @@ const styles = StyleSheet.create({
   map: {
     height: DEFAULT_MAP_HEIGHT,
     width: '100%',
-  },
-  fullScreenMap: {
-    height: SCREEN_HEIGHT,
-    width: SCREEN_WIDTH,
   },
   controlsContainer: {
     position: 'absolute',
