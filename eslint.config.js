@@ -6,16 +6,10 @@ module.exports = defineConfig([
   expoConfig,
   {
     ignores: ['dist/*'],
+  },
+  {
     rules: {
-      'prettier/prettier': [
-        'error',
-        {
-          parser: 'typescript',
-          semi: false,
-          endOfLine: 'lf',
-          trailingComma: 'all',
-        },
-      ],
+      'import/no-unresolved': ['error', {}],
     },
   },
 ])
