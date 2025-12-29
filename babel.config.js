@@ -7,6 +7,16 @@ module.exports = function (api) {
     ],
     plugins: [
       [
+        'module-resolver',
+        {
+          root: ['./'],
+          alias: {
+            '@': './src',
+          },
+          extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+        },
+      ],
+      [
         'module:react-native-dotenv',
         {
           moduleName: '@env',
@@ -15,27 +25,6 @@ module.exports = function (api) {
           allowUndefined: true,
         },
       ],
-      [
-        'module-resolver',
-        {
-          root: ['./'],
-          alias: {
-            '@': './src',
-          },
-          extensions: [
-            '.ios.ts',
-            '.android.ts',
-            '.ts',
-            '.ios.tsx',
-            '.android.tsx',
-            '.tsx',
-            '.jsx',
-            '.js',
-            '.json',
-          ],
-        },
-      ],
-      'react-native-worklets/plugin',
     ],
   }
 }
