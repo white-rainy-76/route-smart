@@ -9,5 +9,10 @@
     "checkJs": true,
     "resolveJsonModule": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts", "src/types/**/*.ts"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "nativewind-env.d.ts",
+    "src/shared/types/**/*.ts"
+  ]
 }

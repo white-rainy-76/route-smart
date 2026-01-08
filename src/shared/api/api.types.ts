@@ -1,12 +1,5 @@
-export interface ApiResponse<T = any> {
-  data: T
-  message?: string
-  success: boolean
-}
+import { z } from 'zod'
+import { ApiErrorDataDtoSchema, ApiErrorDataSchema } from './api.contracts'
 
-export interface ApiError {
-  message: string
-  code?: string
-  errors?: Record<string, string[]>
-}
-
+export type ApiErrorDataDto = z.infer<typeof ApiErrorDataDtoSchema>
+export type ApiErrorData = z.infer<typeof ApiErrorDataSchema>

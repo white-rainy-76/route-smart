@@ -1,128 +1,16 @@
-import { useApp } from '@/contexts/app-context'
-import { useTranslation } from '@/hooks/use-translation'
-import { useRouter } from 'expo-router'
-import { useState } from 'react'
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { LoginForm } from '@/components/login-form/login-form'
+import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 
 export default function LoginScreen() {
-  const { t } = useTranslation()
-  const router = useRouter()
-  const { setAuthenticated } = useApp()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert(t('auth.error'), t('auth.fillAllFields'))
-      return
-    }
-
-    setIsLoading(true)
-    try {
-      // TODO: Implement actual login logic
-      // For now, just simulate login
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      await setAuthenticated(true)
-      router.replace('/create-truck-profile')
-    } catch (error) {
-      Alert.alert(t('auth.error'), t('auth.loginFailed'))
-      console.error('Login error:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleSignupPress = () => {
-    router.push('/(auth)/signup')
-  }
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-background">
       <ScrollView
         contentContainerClassName="flex-grow"
-        keyboardShouldPersistTaps="handled">
-        <View className="flex-1 px-6 justify-center">
-          {/* Logo/Header */}
-          <View className="items-center mb-12">
-            <View className="w-24 h-24 bg-primary rounded-full items-center justify-center mb-6">
-              <Text className="text-5xl">🚚</Text>
-            </View>
-            <Text className="text-3xl font-bold text-foreground mb-2">
-              {t('auth.welcomeBack')}
-            </Text>
-            <Text className="text-muted-foreground text-base text-center">
-              {t('auth.loginSubtitle')}
-            </Text>
-          </View>
-
-          {/* Form */}
-          <View className="gap-4 mb-6">
-            <View>
-              <Text className="text-foreground font-medium mb-2">
-                {t('auth.email')}
-              </Text>
-              <TextInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder={t('auth.emailPlaceholder')}
-                placeholderTextColor="#94a3b8"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                className="bg-card border border-border rounded-xl px-4 py-4 text-foreground"
-              />
-            </View>
-
-            <View>
-              <Text className="text-foreground font-medium mb-2">
-                {t('auth.password')}
-              </Text>
-              <TextInput
-                value={password}
-                onChangeText={setPassword}
-                placeholder={t('auth.passwordPlaceholder')}
-                placeholderTextColor="#94a3b8"
-                secureTextEntry
-                autoCapitalize="none"
-                autoComplete="password"
-                className="bg-card border border-border rounded-xl px-4 py-4 text-foreground"
-              />
-            </View>
-
-            <TouchableOpacity
-              onPress={handleLogin}
-              disabled={isLoading}
-              className={`bg-primary py-4 rounded-xl items-center mt-2 ${
-                isLoading ? 'opacity-50' : ''
-              }`}>
-              <Text className="text-primary-foreground text-lg font-semibold">
-                {isLoading ? t('common.loading') : t('auth.login')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Sign up link */}
-          <View className="flex-row justify-center items-center gap-2">
-            <Text className="text-muted-foreground">{t('auth.noAccount')}</Text>
-            <TouchableOpacity onPress={handleSignupPress}>
-              <Text className="text-primary font-semibold">
-                {t('auth.signUp')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}>
+        <LoginForm />
       </ScrollView>
     </KeyboardAvoidingView>
   )

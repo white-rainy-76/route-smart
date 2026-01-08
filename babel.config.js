@@ -1,3 +1,8 @@
+/** @type {import('react-native-worklets/plugin').PluginOptions} */
+const workletsPluginOptions = {
+  // Your custom options.
+}
+
 module.exports = function (api) {
   api.cache(true)
   return {
@@ -25,6 +30,7 @@ module.exports = function (api) {
           allowUndefined: true,
         },
       ],
+      ['react-native-worklets/plugin', workletsPluginOptions],
     ],
   }
 }

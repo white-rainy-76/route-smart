@@ -5,6 +5,9 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["'Nunito'", 'system-ui', 'sans-serif'],
+      },
       colors: {
         // Используем CSS переменные для динамических тем
         background: 'rgb(var(--color-background) / <alpha-value>)',
@@ -46,7 +49,7 @@ module.exports = {
           '--color-accent-foreground': '15 23 42',
           '--color-border': '226 232 240',
           '--color-input': '226 232 240',
-          '--color-primary': '10 126 164',
+          '--color-primary': '73 100 216',
           '--color-primary-foreground': '255 255 255',
           '--color-secondary': '241 245 249',
           '--color-secondary-foreground': '15 23 42',

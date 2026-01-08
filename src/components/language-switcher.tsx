@@ -1,4 +1,4 @@
-import { useTranslation } from '@/hooks/use-translation'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { RTL_LANGUAGES } from '@/i18n/config'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { I18nManager, Pressable, Text, View } from 'react-native'

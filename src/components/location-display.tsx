@@ -1,5 +1,5 @@
-import { useLocation } from '@/hooks/use-location'
-import { useTranslation } from '@/hooks/use-translation'
+import { useLocation } from '@/shared/hooks/use-location'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Pressable, Text, View } from 'react-native'
 
 export function LocationDisplay() {

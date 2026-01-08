@@ -1,5 +1,5 @@
-import { useApp } from '@/contexts/app-context'
-import { useTranslation } from '@/hooks/use-translation'
+import { useApp } from '@/shared/contexts/app-context'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import {

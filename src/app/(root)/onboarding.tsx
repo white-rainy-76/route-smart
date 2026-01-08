@@ -1,10 +1,10 @@
-import { useApp } from '@/contexts/app-context'
-import { useTranslation } from '@/hooks/use-translation'
+import { Button, Typography } from '@/components/ui'
+import { useApp } from '@/shared/contexts/app-context'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { useRouter } from 'expo-router'
 import { useRef, useState } from 'react'
 import {
   Dimensions,
-  Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
@@ -78,17 +78,17 @@ export default function OnboardingScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <View className="flex-1">
-        {/* Skip button */}
-        <View className="absolute top-12 right-6 z-10">
-          <TouchableOpacity onPress={handleSkip}>
-            <Text className="text-primary text-base font-medium">
-              {t('onboarding.skip')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+      {/* Skip button */}
+      <View className="absolute top-12 right-6 z-10">
+        <TouchableOpacity onPress={handleSkip}>
+          <Text className="text-primary text-base font-medium">
+            {t('onboarding.skip')}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-        {/* Slides */}
+      {/* Upper block - Slides */}
+      <View style={{ paddingTop: 158, flex: 1 }}>
         <ScrollView
           ref={scrollViewRef}
           horizontal
@@ -97,50 +97,71 @@ export default function OnboardingScreen() {
           onScroll={handleScroll}
           scrollEventThrottle={16}>
           {slides.map((slide) => (
-            <View
-              key={slide.id}
-              style={{ width: SCREEN_WIDTH }}
-              className="flex-1 items-center justify-center px-8">
-              <View className="items-center gap-8">
+            <View key={slide.id} style={{ width: SCREEN_WIDTH }}>
+              <View className="items-center" style={{ paddingHorizontal: 48 }}>
+                {/* Illustration */}
                 <View className="w-48 h-48 items-center justify-center bg-primary/10 rounded-full">
                   <Text className="text-8xl">{slide.illustration}</Text>
                 </View>
-                <View className="items-center gap-4 max-w-sm">
-                  <Text className="text-3xl font-bold text-foreground text-center">
+
+                {/* Text content */}
+                <View
+                  style={{
+                    marginTop: 64,
+                    alignItems: 'center',
+                    maxWidth: 320,
+                  }}>
+                  <Typography variant="h1" align="center">
                     {slide.title}
-                  </Text>
-                  <Text className="text-lg text-muted-foreground text-center leading-6">
-                    {slide.description}
-                  </Text>
+                  </Typography>
+                  <View style={{ marginTop: 16 }}>
+                    <Typography variant="body" weight="600" align="center">
+                      {slide.description}
+                    </Typography>
+                  </View>
                 </View>
               </View>
             </View>
           ))}
         </ScrollView>
+      </View>
 
-        {/* Pagination dots */}
-        <View className="flex-row justify-center gap-2 pb-8">
-          {slides.map((_, index) => (
-            <View
-              key={index}
-              className={`h-2 rounded-full ${
-                index === currentIndex ? 'w-8 bg-primary' : 'w-2 bg-muted'
-              }`}
-            />
-          ))}
+      {/* Lower block - Button and pagination */}
+      <View
+        style={{ paddingHorizontal: 55, paddingTop: 64, paddingBottom: 36 }}>
+        {/* Button */}
+        <View className="items-center">
+          <Button onPress={handleNext} variant="primary" size="md">
+            {currentIndex === slides.length - 1
+              ? t('onboarding.getStarted')
+              : t('onboarding.next')}
+          </Button>
         </View>
 
-        {/* Navigation buttons */}
-        <View className="px-6 pb-8 gap-4">
-          <TouchableOpacity
-            onPress={handleNext}
-            className="bg-primary py-4 rounded-xl items-center">
-            <Text className="text-primary-foreground text-lg font-semibold">
-              {currentIndex === slides.length - 1
-                ? t('onboarding.getStarted')
-                : t('onboarding.next')}
-            </Text>
-          </TouchableOpacity>
+        {/* Pagination bar */}
+        <View
+          style={{
+            marginTop: 36,
+            alignItems: 'center',
+          }}>
+          <View
+            style={{
+              width: 90,
+              height: 6,
+              backgroundColor: '#EFEFF4',
+              borderRadius: 4,
+            }}>
+            <View
+              style={{
+                width: 30,
+                height: 6,
+                backgroundColor: '#4964D8',
+                borderRadius: 4,
+                position: 'absolute',
+                left: (90 / slides.length) * currentIndex,
+              }}
+            />
+          </View>
         </View>
       </View>
     </View>

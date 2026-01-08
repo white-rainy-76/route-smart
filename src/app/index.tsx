@@ -1,14 +1,9 @@
-import { useApp } from '@/contexts/app-context'
+import { useApp } from '@/shared/contexts/app-context'
 import { Redirect } from 'expo-router'
 import { ActivityIndicator, View } from 'react-native'
 
 export default function Index() {
-  const {
-    hasCompletedOnboarding,
-    isAuthenticated,
-    hasTruckProfile,
-    isLoading,
-  } = useApp()
+  const { hasCompletedOnboarding, isAuthenticated, isLoading } = useApp()
 
   // Show loading screen while checking app state
   if (isLoading) {
@@ -28,10 +23,5 @@ export default function Index() {
     return <Redirect href="/(auth)/login" />
   }
 
-  if (!hasTruckProfile) {
-    return <Redirect href="/create-truck-profile" />
-  }
-
   return <Redirect href="/home" />
 }
-

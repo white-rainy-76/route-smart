@@ -1,6 +1,6 @@
-import { useLocation } from '@/hooks/use-location'
-import { useTheme } from '@/hooks/use-theme'
-import { useTranslation } from '@/hooks/use-translation'
+import { useLocation } from '@/shared/hooks/use-location'
+import { useTheme } from '@/shared/hooks/use-theme'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Pressable, Text, View } from 'react-native'
 
 interface LocationPermissionRequestProps {

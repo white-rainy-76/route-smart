@@ -10,4 +10,3 @@ export const logInfo = (message: string, context?: Record<string, any>) => {
   console.log('Info:', message, context)
   // Sentry.captureMessage(message, { level: 'info', extra: context })
 }
-

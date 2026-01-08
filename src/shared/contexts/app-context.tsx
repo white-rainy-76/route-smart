@@ -17,9 +17,9 @@ interface AppContextType extends AppState {
 const AppContext = createContext<AppContextType | undefined>(undefined)
 
 const STORAGE_KEYS = {
-  ONBOARDING: '@route-smart:onboarding-completed',
-  AUTH: '@route-smart:authenticated',
-  TRUCK_PROFILE: '@route-smart:truck-profile-completed',
+  ONBOARDING: '@road-smart:onboarding-completed',
+  AUTH: '@road-smart:authenticated',
+  TRUCK_PROFILE: '@road-smart:truck-profile-completed',
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {

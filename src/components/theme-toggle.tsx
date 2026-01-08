@@ -1,5 +1,5 @@
-import { useTheme } from '@/hooks/use-theme'
-import { useTranslation } from '@/hooks/use-translation'
+import { useTheme } from '@/shared/hooks/use-theme'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Pressable, Text, View } from 'react-native'
 
 export function ThemeToggle() {

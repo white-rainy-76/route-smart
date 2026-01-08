@@ -12,7 +12,8 @@
     "confirm": "Confirm",
     "search": "Search",
     "filter": "Filter",
-    "sort": "Sort"
+    "sort": "Sort",
+    "or": "or"
   },
   "home": {
     "title": "Welcome!",
@@ -74,16 +75,16 @@
     "next": "Next",
     "getStarted": "Get Started",
     "slide1": {
-      "title": "Welcome to Route Smart",
-      "description": "Manage your truck fleet efficiently with our smart routing system"
+      "title": "See Toll Costs",
+      "description": "Smart Tolls shows toll roads, prices, and total toll cost for your route before you start driving — no surprises on the road."
     },
     "slide2": {
-      "title": "Track Your Routes",
-      "description": "Get real-time location updates and optimize your delivery routes"
+      "title": "Choose Your Route",
+      "description": "Compare routes with and without tolls, adjust your path manually, and instantly see how much you can save."
     },
     "slide3": {
-      "title": "Smart Features",
-      "description": "Experience advanced analytics and intelligent route planning"
+      "title": "Know Trip Cost",
+      "description": "Smart Tolls calculates total trip cost based on tolls, distance, and diesel consumption — all in one clear view."
     }
   },
   "auth": {
@@ -103,10 +104,17 @@
     "haveAccount": "Already have an account?",
     "error": "Error",
     "fillAllFields": "Please fill all fields",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email address",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least 6 characters",
     "passwordsDontMatch": "Passwords don't match",
     "passwordTooShort": "Password must be at least 6 characters",
     "loginFailed": "Login failed. Please try again.",
-    "signupFailed": "Signup failed. Please try again."
+    "signupFailed": "Signup failed. Please try again.",
+    "signInWithApple": "Sign in with Apple",
+    "appleSignInFailed": "Apple Sign In failed. Please try again.",
+    "appleSignInNotAvailable": "Apple Sign In is not available on this device."
   },
   "truckProfile": {
     "title": "Create Truck Profile",
