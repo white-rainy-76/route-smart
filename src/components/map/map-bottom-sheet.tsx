@@ -1,10 +1,12 @@
+import { RouteForm, WaypointsEditor } from '@/components/route-form'
 import { useUserLocation } from '@/shared/location'
+import { useRouteStore } from '@/shared/stores/route-store'
 import { MaterialIcons } from '@expo/vector-icons'
 import BottomSheet, {
   BottomSheetView,
   useBottomSheet,
 } from '@gorhom/bottom-sheet'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Dimensions,
   StyleSheet,
@@ -57,11 +59,11 @@ function BottomSheetPositionTracker({
       buttonBottom.value = screenHeight - position + 20
 
       // Вычисляем прозрачность заголовка
-      // При 25% (screenHeight * 0.75) - opacity = 0
-      // При 75% (screenHeight * 0.25) - opacity начинает появляться (0)
+      // При 35% (screenHeight * 0.65) - opacity = 0
+      // При 75% (screenHeight * 0.35) - opacity начинает появляться (0)
       // При 88.1% (screenHeight * 0.119) - opacity = 1
       const maxPosition = screenHeight * 0.119 // 88.1% от низа (100% - 88.1% = 11.9% от верха)
-      const startFadePosition = screenHeight * 0.25 // 75% от низа (100% - 75% = 25% от верха) - начало появления
+      const startFadePosition = screenHeight * 0.35 // 75% от низа (100% - 65% = 35% от верха) - начало появления
 
       let opacity = 0
 
@@ -144,18 +146,39 @@ export function MapBottomSheet({
 }: MapBottomSheetProps) {
   const bottomSheetRef = useRef<BottomSheet>(null)
   const userLocation = useUserLocation()
+  const [mode, setMode] = useState<'form' | 'waypoints'>('form')
 
-  const snapPoints = useMemo(() => ['25%', '88.1%'], [])
+  const formSnapPoints = useMemo(() => ['35%', '88.1%'], [])
+  const origin = useRouteStore((s) => s.origin)
+  const destination = useRouteStore((s) => s.destination)
+  const waypointsCount = useRouteStore((s) => s.waypoints.length)
+  const totalStopsCount =
+    (origin ? 1 : 0) + waypointsCount + (destination ? 1 : 0)
 
   const screenHeight = Dimensions.get('window').height
+  const maxSheetHeight = screenHeight * 0.881
+  const waypointsCollapsedHeight = useMemo(() => {
+    // Approximate content height without relying on unsupported CONTENT_HEIGHT.
+    const rowHeight = 64
+    const footerHeight = 200 // add stop + back + spacing
+    const minHeight = 260
+    return Math.min(
+      maxSheetHeight,
+      Math.max(minHeight, footerHeight + totalStopsCount * rowHeight),
+    )
+  }, [maxSheetHeight, totalStopsCount])
+  const waypointsSnapPoints = useMemo(
+    () => [waypointsCollapsedHeight, maxSheetHeight],
+    [waypointsCollapsedHeight, maxSheetHeight],
+  )
   // Shared value для анимации позиции кнопки - отслеживает позицию bottom sheet в реальном времени
-  const buttonBottom = useSharedValue(screenHeight * 0.25 + 20) // начальная позиция при 25%
+  const buttonBottom = useSharedValue(screenHeight * 0.35 + 20) // начальная позиция при 25%
   // Shared value для прозрачности заголовка
   const headerOpacity = useSharedValue(0)
   // Shared value для прозрачности кнопки локации (скрывается когда заголовок виден)
   const buttonOpacity = useSharedValue(1)
   // Shared value для позиции bottomSheet от верха экрана (для высоты заголовка)
-  const bottomSheetPosition = useSharedValue(screenHeight * 0.75) // начальная позиция при 25%
+  const bottomSheetPosition = useSharedValue(screenHeight * 0.65) // начальная позиция при 25%
 
   // Передаем buttonOpacity наружу для скрытия sidebar button
   useEffect(() => {
@@ -181,7 +204,7 @@ export function MapBottomSheet({
   const handleSheetChanges = useCallback((index: number) => {
     console.log('Bottom sheet index:', index)
     // Предотвращаем закрытие ниже минимума
-    // index должен быть 0 (25%) или 1 (90%)
+    // index должен быть 0 (35%) или 1 (90%)
     if (index < 0 || index > 1) {
       // Если индекс выходит за допустимые пределы, возвращаемся к минимуму
       bottomSheetRef.current?.snapToIndex(0)
@@ -240,7 +263,10 @@ export function MapBottomSheet({
       <BottomSheet
         ref={bottomSheetRef}
         index={0}
-        snapPoints={snapPoints}
+        snapPoints={mode === 'waypoints' ? waypointsSnapPoints : formSnapPoints}
+        android_keyboardInputMode="adjustResize"
+        keyboardBehavior="extend"
+        keyboardBlurBehavior="none"
         onChange={handleSheetChanges}
         onAnimate={(fromIndex, toIndex) => {
           // Блокируем анимацию к индексу меньше 0
@@ -262,14 +288,24 @@ export function MapBottomSheet({
           buttonOpacity={buttonOpacity}
           bottomSheetPosition={bottomSheetPosition}
         />
-        <BottomSheetView style={styles.contentContainer}>
-          <View>
-            <Text>
-              {' '}
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-              quos.
-            </Text>
-          </View>
+        <BottomSheetView
+          style={[
+            styles.contentContainer,
+            mode === 'waypoints' ? { paddingTop: 6 } : null,
+          ]}>
+          {mode === 'form' ? (
+            <RouteForm
+              onManageWaypoints={() => {
+                setMode('waypoints')
+              }}
+            />
+          ) : (
+            <WaypointsEditor
+              onBack={() => {
+                setMode('form')
+              }}
+            />
+          )}
         </BottomSheetView>
       </BottomSheet>
     </>
@@ -284,8 +320,6 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: '#4964D8',
     zIndex: 0, // Под bottomSheet (который имеет z-index выше), но выше карты
-    paddingHorizontal: 16,
-    paddingBottom: 16,
     overflow: 'hidden',
   },
   headerContent: {
@@ -325,7 +359,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 10,
+    paddingHorizontal: 19,
+    paddingTop: 17,
   },
 })

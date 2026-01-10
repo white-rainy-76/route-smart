@@ -129,5 +129,21 @@
     "error": "Error",
     "fillAllFields": "Please fill all fields",
     "creationFailed": "Failed to create profile. Please try again."
+  },
+  "locationPicker": {
+    "noResultsFound": "No results found",
+    "showOnMap": "Show on map"
+  },
+  "routeForm": {
+    "chooseStart": "Choose your starting point",
+    "chooseDestination": "Choose destination",
+    "withMoreStops": "{{name}} → {{count}} more",
+    "mpgPlaceholder": "Miles Per Gallon",
+    "calculate": "Calculate",
+    "back": "Back",
+    "from": "From",
+    "via": "Via",
+    "to": "To",
+    "addStop": "Add stop"
   }
 }

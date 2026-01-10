@@ -46,6 +46,14 @@ export default function RootLayout() {
             // drawerItemStyle: { height: 0 }, // Скрыть из drawer меню
           }}
         />
+        <Drawer.Screen
+          name="location-picker"
+          options={{
+            drawerLabel: 'Location Picker',
+            title: 'Location Picker',
+            drawerItemStyle: { height: 0 }, // Скрыть из drawer меню
+          }}
+        />
       </Drawer>
     </BottomSheetModalProvider>
   )

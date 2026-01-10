@@ -54,7 +54,6 @@ export const refreshToken = async (
   const response = await api
     .post(`/auth-api/Auth/refresh-mobile`, validatedPayload, config)
     .then(responseContract(refreshTokenResponseSchema))
-
   return response.data
 }
 

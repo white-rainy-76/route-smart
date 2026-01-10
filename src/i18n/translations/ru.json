@@ -129,5 +129,21 @@
     "error": "Ошибка",
     "fillAllFields": "Заполните все поля",
     "creationFailed": "Не удалось создать профиль. Попробуйте еще раз."
+  },
+  "locationPicker": {
+    "noResultsFound": "Ничего не найдено",
+    "showOnMap": "Показать на карте"
+  },
+  "routeForm": {
+    "chooseStart": "Выберите стартовую точку",
+    "chooseDestination": "Выберите пункт назначения",
+    "withMoreStops": "{{name}} → ещё {{count}}",
+    "mpgPlaceholder": "Миль на галлон",
+    "calculate": "Рассчитать",
+    "back": "Назад",
+    "from": "Откуда",
+    "via": "Через",
+    "to": "Куда",
+    "addStop": "Добавить остановку"
   }
 }
