@@ -16,6 +16,7 @@ interface RouteInputProps {
   onAddPress?: () => void
   icon?: 'place' | 'speedometer'
   showIcon?: boolean
+  error?: string
 }
 
 export function RouteInput({
@@ -29,6 +30,7 @@ export function RouteInput({
   onAddPress,
   icon = 'place',
   showIcon = true,
+  error,
 }: RouteInputProps) {
   const { t } = useTranslation()
   const { resolvedTheme } = useTheme()
@@ -92,8 +94,18 @@ export function RouteInput({
         )}
       </View>
       <View
-        className={`h-[1px] bg-border mt-1 ${showIcon ? 'ml-[39px]' : 'ml-0'}`}
+        className={`h-[1px] mt-1 ${showIcon ? 'ml-[39px]' : 'ml-0'} ${
+          error ? 'bg-red-500' : 'bg-border'
+        }`}
       />
+      {error && (
+        <Typography
+          variant="caption"
+          color="#EF4444"
+          className={`mt-1 ${showIcon ? 'ml-[39px]' : 'ml-0'}`}>
+          {error}
+        </Typography>
+      )}
     </View>
   )
 }

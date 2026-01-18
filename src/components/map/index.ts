@@ -1,2 +1,2 @@
+export { MapBottomSheet } from './bottomSheet/map-bottom-sheet'
 export { Map } from './map'
-export { MapBottomSheet } from './map-bottom-sheet'

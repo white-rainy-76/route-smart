@@ -21,46 +21,46 @@ export function useGetDirectionsMutation(
   > = {},
 ) {
   const { mutationKey = [], onMutate, onSuccess, onError, onSettled } = options
+  // Ensure we abort the *same* request we started for this mutation call.
+  // React Query runs `onMutate` before `mutationFn`, so we create the controller there
+  // and then use it inside `mutationFn`.
+  let abortController: AbortController | null = null
 
   return useMutation({
     mutationKey: ['directions', action, ...mutationKey],
 
     mutationFn: async (payload: RouteRequestPayload) => {
       const validatedPayload = RouteRequestPayloadSchema.parse(payload)
-      const controller = new AbortController()
-      return handleFuelRoute(validatedPayload, action, controller.signal)
+      if (!abortController) abortController = new AbortController()
+      return handleFuelRoute(validatedPayload, action, abortController.signal)
     },
 
-    onMutate: async (variables, context) => {
-      const controller = new AbortController()
-      if (onMutate) {
-        await onMutate(variables, context)
-      }
-      return { abortController: controller }
+    onMutate: async (variables) => {
+      abortController = new AbortController()
+      // Forward any additional args expected by the project's react-query types.
+      await (onMutate as any)?.(variables)
+      return { abortController: abortController }
     },
 
-    onSuccess: async (data, variables, context) => {
-      if (onSuccess) {
-        await onSuccess(data, variables, context)
-      }
+    onSuccess: async (data, variables, context, ...rest) => {
+      await (onSuccess as any)?.(data, variables, context, ...rest)
     },
 
-    onError: (error, variables, context) => {
+    onError: (error, variables, context, ...rest) => {
       if (context?.abortController) {
         context.abortController.abort('Request cancelled due to error')
       }
-      if (onError) {
-        onError(error, variables, context)
-      }
+      abortController?.abort('Request cancelled due to error')
+      ;(onError as any)?.(error, variables, context, ...rest)
     },
 
-    onSettled: (data, error, variables, context) => {
+    onSettled: (data, error, variables, context, ...rest) => {
       if (context?.abortController) {
         context.abortController.abort('Request settled')
       }
-      if (onSettled) {
-        onSettled(data, error, variables, context)
-      }
+      abortController?.abort('Request settled')
+      abortController = null
+      ;(onSettled as any)?.(data, error, variables, context, ...rest)
     },
   })
 }

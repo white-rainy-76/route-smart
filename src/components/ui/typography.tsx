@@ -33,13 +33,22 @@ const fontFamilyMap: Record<TypographyWeight, string> = {
   '900': 'Nunito_900Black',
 }
 
-// Базовые стили для каждого варианта
+// Базовые стили для каждого варианта с учётом различий между платформами
+// Android рендерит Nunito шире, поэтому используем меньшие размеры
 const variantStyles: Record<
   TypographyVariant,
   { fontSize: number; lineHeight: number; defaultWeight: TypographyWeight }
 > = {
-  h1: { fontSize: 32, lineHeight: 36, defaultWeight: '700' },
-  h2: { fontSize: 24, lineHeight: 28, defaultWeight: '700' },
+  h1: {
+    fontSize: Platform.select({ android: 28, default: 32 })!,
+    lineHeight: Platform.select({ android: 32, default: 36 })!,
+    defaultWeight: '700',
+  },
+  h2: {
+    fontSize: Platform.select({ android: 22, default: 24 })!,
+    lineHeight: Platform.select({ android: 26, default: 28 })!,
+    defaultWeight: '700',
+  },
   h3: { fontSize: 20, lineHeight: 24, defaultWeight: '600' },
   h4: { fontSize: 18, lineHeight: 22, defaultWeight: '600' },
   bodyLarge: { fontSize: 18, lineHeight: 26, defaultWeight: '400' },

@@ -10,6 +10,7 @@ import { saveTokens } from '@/shared/lib/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as AppleAuthentication from 'expo-apple-authentication'
 import { useRouter } from 'expo-router'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Alert, Platform, Text, TouchableOpacity, View } from 'react-native'
 import { z } from 'zod'
@@ -30,6 +31,7 @@ export function LoginForm() {
   const { t } = useTranslation()
   const router = useRouter()
   const { setAuthenticated } = useApp()
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const loginSchema = createLoginSchema(t)
 
@@ -49,20 +51,22 @@ export function LoginForm() {
 
   const signInMutation = useSignInMutation({
     onSuccess: async (data) => {
-      // Save tokens
-      await saveTokens(data.token, data.refreshToken)
+      setServerError(null)
+      // Save tokens and userId
+      await saveTokens(data.token, data.refreshToken, data.userId)
       // Update auth state
       await setAuthenticated(true)
-      // Navigate to home
-      router.replace('/home')
+      // Navigate to index to handle routing logic
+      router.replace('/')
     },
     onError: (error) => {
-      Alert.alert(t('auth.error'), t('auth.loginFailed'))
+      setServerError(t('auth.invalidCredentials'))
       console.error('Login error:', error)
     },
   })
 
   const onSubmit = async (data: LoginFormData) => {
+    setServerError(null)
     signInMutation.mutate({
       email: data.email,
       password: data.password,
@@ -75,12 +79,12 @@ export function LoginForm() {
 
   const appleSignInMutation = useAppleSignInMutation({
     onSuccess: async (data) => {
-      // Save tokens
-      await saveTokens(data.token, data.refreshToken)
+      // Save tokens and userId
+      await saveTokens(data.token, data.refreshToken, data.userId)
       // Update auth state
       await setAuthenticated(true)
-      // Navigate to home
-      router.replace('/home')
+      // Navigate to index to handle routing logic
+      router.replace('/')
     },
     onError: (error) => {
       Alert.alert(t('auth.error'), t('auth.appleSignInFailed'))
@@ -128,7 +132,6 @@ export function LoginForm() {
           titleKey="auth.welcomeBack"
           subtitleKey="auth.loginSubtitle"
         />
-
         {/* Form */}
         <View className="gap-5 mb-6">
           {/* Username Input */}
@@ -169,6 +172,13 @@ export function LoginForm() {
               />
             )}
           />
+
+          {/* Server Error */}
+          {serverError && (
+            <Typography variant="bodySmall" color="#ef4444" align="center">
+              {serverError}
+            </Typography>
+          )}
 
           {/* Login Button */}
           <Button
@@ -211,7 +221,6 @@ export function LoginForm() {
             </View>
           )}
         </View>
-
         {/* Sign up link */}
         <View className="flex-row justify-center items-center gap-2 mt-6">
           <Typography variant="body" align="center" color="#77808D">

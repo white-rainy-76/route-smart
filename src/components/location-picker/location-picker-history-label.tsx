@@ -3,7 +3,7 @@ import { View } from 'react-native'
 
 export function LocationPickerHistoryLabel() {
   return (
-    <View className="px-5 mb-3">
+    <View className="px-7 mb-3">
       <Typography
         variant="body"
         weight="600"

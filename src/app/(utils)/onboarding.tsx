@@ -1,12 +1,15 @@
-import { Button, Typography } from '@/components/ui'
+import { Button, Screen, Typography } from '@/components/ui'
 import { useApp } from '@/shared/contexts/app-context'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import { useRouter } from 'expo-router'
 import { useRef, useState } from 'react'
 import {
   Dimensions,
+  Image,
+  ImageSourcePropType,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -19,7 +22,7 @@ interface OnboardingSlide {
   id: string
   title: string
   description: string
-  illustration: string
+  illustration: ImageSourcePropType
 }
 
 export default function OnboardingScreen() {
@@ -34,19 +37,19 @@ export default function OnboardingScreen() {
       id: '1',
       title: t('onboarding.slide1.title'),
       description: t('onboarding.slide1.description'),
-      illustration: '🚚',
+      illustration: require('../../../assets/images/knowTripCost.png'),
     },
     {
       id: '2',
       title: t('onboarding.slide2.title'),
       description: t('onboarding.slide2.description'),
-      illustration: '📍',
+      illustration: require('../../../assets/images/chooseYourRoute.png'),
     },
     {
       id: '3',
       title: t('onboarding.slide3.title'),
       description: t('onboarding.slide3.description'),
-      illustration: '⚡',
+      illustration: require('../../../assets/images/seeTollsCosts.png'),
     },
   ]
 
@@ -77,7 +80,7 @@ export default function OnboardingScreen() {
   }
 
   return (
-    <View className="flex-1 bg-background">
+    <Screen safeBottom bottomPadding={20}>
       {/* Skip button */}
       <View className="absolute top-12 right-6 z-10">
         <TouchableOpacity onPress={handleSkip}>
@@ -88,7 +91,11 @@ export default function OnboardingScreen() {
       </View>
 
       {/* Upper block - Slides */}
-      <View style={{ paddingTop: 158, flex: 1 }}>
+      <View
+        style={{
+          paddingTop: Platform.select({ android: 130, default: 158 }),
+          flex: 1,
+        }}>
         <ScrollView
           ref={scrollViewRef}
           horizontal
@@ -100,14 +107,21 @@ export default function OnboardingScreen() {
             <View key={slide.id} style={{ width: SCREEN_WIDTH }}>
               <View className="items-center" style={{ paddingHorizontal: 48 }}>
                 {/* Illustration */}
-                <View className="w-48 h-48 items-center justify-center bg-primary/10 rounded-full">
-                  <Text className="text-8xl">{slide.illustration}</Text>
+                <View className="items-center justify-center">
+                  <Image
+                    source={slide.illustration}
+                    style={{
+                      width: Platform.select({ android: 240, default: 278 }),
+                      height: Platform.select({ android: 240, default: 278 }),
+                    }}
+                    resizeMode="contain"
+                  />
                 </View>
 
                 {/* Text content */}
                 <View
                   style={{
-                    marginTop: 64,
+                    marginTop: Platform.select({ android: 40, default: 64 }),
                     alignItems: 'center',
                     maxWidth: 320,
                   }}>
@@ -127,8 +141,7 @@ export default function OnboardingScreen() {
       </View>
 
       {/* Lower block - Button and pagination */}
-      <View
-        style={{ paddingHorizontal: 55, paddingTop: 64, paddingBottom: 36 }}>
+      <View style={{ paddingHorizontal: 55, paddingTop: 64, paddingBottom: 16 }}>
         {/* Button */}
         <View className="items-center">
           <Button onPress={handleNext} variant="primary" size="md">
@@ -164,6 +177,6 @@ export default function OnboardingScreen() {
           </View>
         </View>
       </View>
-    </View>
+    </Screen>
   )
 }

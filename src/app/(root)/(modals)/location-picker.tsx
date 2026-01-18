@@ -1,28 +1,30 @@
 import {
-  LocationItem,
-  LocationPickerEmpty,
-  LocationPickerHeader,
-  LocationPickerHistoryLabel,
-  LocationPickerItem,
-  LocationPickerMapModal,
-  LocationPickerSearch,
+    LocationItem,
+    LocationPickerEmpty,
+    LocationPickerHeader,
+    LocationPickerHistoryLabel,
+    LocationPickerItem,
+    LocationPickerMapModal,
+    LocationPickerSearch,
 } from '@/components/location-picker'
+import { pointsEqual } from '@/components/route-form/route-form.validation'
 import { ShowOnMapButton } from '@/components/ui/show-on-map-button'
+import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import {
-  googlePlaceDetails,
-  googlePlacesAutocomplete,
+    googlePlaceDetails,
+    googlePlacesAutocomplete,
 } from '@/shared/lib/google-places/google-places'
 import {
-  loadLocationPickerHistory,
-  saveLocationPickerHistoryItem,
+    loadLocationPickerHistory,
+    saveLocationPickerHistoryItem,
 } from '@/shared/lib/location-picker/history'
-import { useRouteStore } from '@/shared/stores/route-store'
+import { useDirectionsStore } from '@/shared/stores/directions-store'
+import { RoutePoint, useRouteStore } from '@/shared/stores/route-store'
 import { useFocusEffect } from '@react-navigation/native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ActivityIndicator, FlatList, View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { ActivityIndicator, Alert, FlatList, View } from 'react-native'
 
 export default function LocationPickerScreen() {
   const router = useRouter()
@@ -31,8 +33,8 @@ export default function LocationPickerScreen() {
     append?: string
   }>()
 
-  const insets = useSafeAreaInsets()
   const { currentLanguage } = useTranslation()
+  const { resolvedTheme } = useTheme()
   // IMPORTANT: keep zustand selectors stable (avoid returning new objects) to prevent
   // "getSnapshot should be cached" / maximum update depth issues.
   const origin = useRouteStore((s) => s.origin)
@@ -161,13 +163,13 @@ export default function LocationPickerScreen() {
   const getTitle = () => {
     switch (type) {
       case 'origin':
-        return 'Start Point'
+        return 'Where are you starting?'
       case 'destination':
-        return 'Destination'
+        return 'Where are you going?'
       case 'waypoint':
-        return 'Add Stop'
+        return 'Where would you like to stop?'
       default:
-        return 'Location'
+        return 'Select location'
     }
   }
 
@@ -195,8 +197,27 @@ export default function LocationPickerScreen() {
 
       if (!resolved) return
 
+      // Проверка на совпадение с уже выбранными точками
+      const allPoints: RoutePoint[] = []
+      if (origin) allPoints.push(origin)
+      if (destination) allPoints.push(destination)
+      allPoints.push(...waypoints)
+
+      const duplicatePoint = allPoints.find((point) => pointsEqual(resolved, point))
+
+      if (duplicatePoint) {
+        Alert.alert(
+          'Location already selected',
+          'This location is already selected as origin, destination, or waypoint',
+        )
+        return
+      }
+
       const nextHistory = await saveLocationPickerHistoryItem(resolved)
       if (isMountedRef.current) setHistory(nextHistory)
+
+      // Очищаем savedRouteId при ручном изменении точек через location-picker
+      useDirectionsStore.getState().setSavedRouteId(null)
 
       switch (type) {
         case 'origin':
@@ -265,8 +286,28 @@ export default function LocationPickerScreen() {
 
     setIsCommitting(true)
     try {
+      // Проверка на совпадение с уже выбранными точками
+      const allPoints: RoutePoint[] = []
+      if (origin) allPoints.push(origin)
+      if (destination) allPoints.push(destination)
+      allPoints.push(...waypoints)
+
+      const duplicatePoint = allPoints.find((p) => pointsEqual(point, p))
+
+      if (duplicatePoint) {
+        Alert.alert(
+          'Location already selected',
+          'This location is already selected as origin, destination, or waypoint',
+        )
+        setIsMapVisible(false)
+        return
+      }
+
       const nextHistory = await saveLocationPickerHistoryItem(point)
       if (isMountedRef.current) setHistory(nextHistory)
+
+      // Очищаем savedRouteId при ручном изменении точек через map picker
+      useDirectionsStore.getState().setSavedRouteId(null)
 
       switch (type) {
         case 'origin':
@@ -289,8 +330,7 @@ export default function LocationPickerScreen() {
   }
 
   const initialMapRegion = useMemo(() => {
-    const existing =
-      type === 'origin' ? origin : type === 'destination' ? destination : null
+    const existing = type === 'origin' ? origin : type === 'destination' ? destination : null
     const latitude = existing?.latitude ?? 39.8283
     const longitude = existing?.longitude ?? -98.5795
     return {
@@ -301,8 +341,10 @@ export default function LocationPickerScreen() {
     }
   }, [type, origin, destination])
 
+  const backgroundColor = resolvedTheme === 'dark' ? '#0F172A' : '#FFFFFF'
+
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1" style={{ backgroundColor }}>
       <LocationPickerHeader title={getTitle()} onBack={() => router.back()} />
 
       <LocationPickerSearch
@@ -318,12 +360,12 @@ export default function LocationPickerScreen() {
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <LocationPickerItem item={item} onPress={handleSelect} />
-        )}
+        renderItem={({ item }) => <LocationPickerItem item={item} onPress={handleSelect} />}
+        keyboardShouldPersistTaps="handled"
         className="flex-1"
         contentContainerStyle={{
           paddingHorizontal: 20,
+          paddingTop: 8,
           paddingBottom: 120,
         }}
         ListEmptyComponent={
@@ -342,9 +384,7 @@ export default function LocationPickerScreen() {
         }
       />
 
-      <View
-        className="absolute left-0 right-0 items-center"
-        style={{ bottom: insets.bottom + 16 }}>
+      <View className="absolute left-0 right-0 bottom-0">
         <ShowOnMapButton onPress={openMap} />
       </View>
 
@@ -358,3 +398,5 @@ export default function LocationPickerScreen() {
     </View>
   )
 }
+
+

@@ -9,8 +9,9 @@ import { useTranslation } from '@/shared/hooks/use-translation'
 import { saveTokens } from '@/shared/lib/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Alert, Text, TouchableOpacity, View } from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
 import { z } from 'zod'
 
 const createSignupSchema = (t: (key: string) => string) =>
@@ -35,6 +36,7 @@ export function SignupForm() {
   const { t } = useTranslation()
   const router = useRouter()
   const { setAuthenticated } = useApp()
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const signupSchema = createSignupSchema(t)
 
@@ -55,20 +57,22 @@ export function SignupForm() {
 
   const signUpMutation = useSignUpMutation({
     onSuccess: async (data) => {
-      // Save tokens
-      await saveTokens(data.token, data.refreshToken)
+      setServerError(null)
+      // Save tokens and userId
+      await saveTokens(data.token, data.refreshToken, data.userId)
       // Update auth state
       await setAuthenticated(true)
-      // Navigate to home
-      router.replace('/home')
+      // Navigate to index to handle routing logic
+      router.replace('/')
     },
     onError: (error) => {
-      Alert.alert(t('auth.error'), t('auth.signupFailed'))
+      setServerError(t('auth.emailAlreadyExists'))
       console.error('Signup error:', error)
     },
   })
 
   const onSubmit = async (data: SignupFormData) => {
+    setServerError(null)
     signUpMutation.mutate({
       email: data.email,
       password: data.password,
@@ -148,6 +152,13 @@ export function SignupForm() {
               />
             )}
           />
+
+          {/* Server Error */}
+          {serverError && (
+            <Typography variant="bodySmall" color="#ef4444" align="center">
+              {serverError}
+            </Typography>
+          )}
 
           {/* Sign Up Button */}
           <Button

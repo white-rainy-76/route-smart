@@ -43,8 +43,7 @@ export const Input = forwardRef<TextInput, InputProps>(
           <Typography
             variant="label"
             weight="600"
-            color="#383838"
-            className="mb-1">
+            className="mb-1 text-foreground">
             {label}
           </Typography>
         )}

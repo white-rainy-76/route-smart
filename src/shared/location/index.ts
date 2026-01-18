@@ -4,16 +4,17 @@ export type { UserLocation } from './location-store'
 
 // Engine
 export {
-  isLocationTracking,
+  startNativeHeading,
   startNativeLocation,
-  stopNativeLocation,
+  stopNativeHeading,
+  stopNativeLocation
 } from './location-engine'
 
 // Tracking
 export {
   resetLocationTracking,
   startLocationTracking,
-  stopLocationTracking,
+  stopLocationTracking
 } from './location-tracking'
 
 // React hook

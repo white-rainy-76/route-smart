@@ -1,8 +1,8 @@
 import { Map, MapBottomSheet } from '@/components/map'
+import { useDrawer } from '@/shared/contexts/drawer-context'
+import { useDirectionsStore } from '@/shared/stores/directions-store'
 import { MaterialIcons } from '@expo/vector-icons'
-import { DrawerActions } from '@react-navigation/native'
-import { useNavigation } from 'expo-router'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import type MapView from 'react-native-maps'
 import Animated, {
@@ -11,14 +11,36 @@ import Animated, {
 } from 'react-native-reanimated'
 
 export default function HomeScreen() {
-  const navigation = useNavigation()
+  const { openDrawer } = useDrawer()
   const mapRef = useRef<MapView>(null)
   const [sidebarButtonOpacity, setSidebarButtonOpacity] =
     useState<SharedValue<number> | null>(null)
+  const [buttonBottom, setButtonBottom] = useState<
+    SharedValue<number> | undefined
+  >(undefined)
+  const [buttonOpacity, setButtonOpacity] = useState<
+    SharedValue<number> | undefined
+  >(undefined)
+  const [driveModeEnabled, setDriveModeEnabled] = useState(false)
+  const setIsTripActive = useDirectionsStore((s) => s.setIsTripActive)
 
-  const openDrawer = () => {
-    navigation.dispatch(DrawerActions.openDrawer())
-  }
+  const handleStartTrip = useCallback(() => {
+    setIsTripActive(true)
+    setDriveModeEnabled(true)
+  }, [setIsTripActive])
+
+  const handleEndTrip = useCallback(() => {
+    setIsTripActive(false)
+    setDriveModeEnabled(false)
+  }, [setIsTripActive])
+
+  const handleButtonAnimationChange = useCallback(
+    (bottom: SharedValue<number>, opacity: SharedValue<number>) => {
+      setButtonBottom(bottom)
+      setButtonOpacity(opacity)
+    },
+    [],
+  )
 
   const sidebarButtonStyle = useAnimatedStyle(() => {
     if (!sidebarButtonOpacity) {
@@ -32,7 +54,14 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Map className="flex-1" mapRef={mapRef} />
+      <Map
+        className="flex-1"
+        mapRef={mapRef}
+        driveModeEnabled={driveModeEnabled}
+        onToggleDriveMode={setDriveModeEnabled}
+        buttonBottom={buttonBottom}
+        buttonOpacity={buttonOpacity}
+      />
       <Animated.View
         className="absolute left-5 top-[52px] w-10 h-10 bg-white rounded-full justify-center items-center z-[1000] shadow-lg"
         style={[styles.menuButton, sidebarButtonStyle]}>
@@ -43,8 +72,10 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </Animated.View>
       <MapBottomSheet
-        mapRef={mapRef}
         onButtonOpacityChange={setSidebarButtonOpacity}
+        onButtonAnimationChange={handleButtonAnimationChange}
+        onStartTrip={handleStartTrip}
+        onEndTrip={handleEndTrip}
       />
     </View>
   )

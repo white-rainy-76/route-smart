@@ -2,10 +2,11 @@ import { Button } from '@/components/ui/button'
 import { Typography } from '@/components/ui/typography'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
+import { useDirectionsStore } from '@/shared/stores/directions-store'
 import { useRouteStore, type RoutePoint } from '@/shared/stores/route-store'
 import { MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Platform, Text, TouchableOpacity, View } from 'react-native'
 import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist'
@@ -37,6 +38,7 @@ export function WaypointsEditor({ onBack }: { onBack: () => void }) {
   const setOrigin = useRouteStore((s) => s.setOrigin)
   const setDestination = useRouteStore((s) => s.setDestination)
   const setWaypoints = useRouteStore((s) => s.setWaypoints)
+  const setSavedRouteId = useDirectionsStore((s) => s.setSavedRouteId)
 
   const textColor = resolvedTheme === 'dark' ? '#F8FAFC' : '#0F172A'
   const mutedColor = resolvedTheme === 'dark' ? '#94A3B8' : '#64748B'
@@ -48,6 +50,9 @@ export function WaypointsEditor({ onBack }: { onBack: () => void }) {
   ]
 
   const applyListToStore = (items: RouteListItem[]) => {
+    // Очищаем savedRouteId при изменении точек через drag list
+    setSavedRouteId(null)
+
     const points = items.map((x) => x.point)
     if (points.length === 0) {
       setOrigin(null)
@@ -157,7 +162,9 @@ export function WaypointsEditor({ onBack }: { onBack: () => void }) {
         contentContainerStyle={{ paddingBottom: 8 }}
       />
 
-      <View className="gap-4">
+      <View 
+        className="gap-4"
+        style={{ paddingBottom: Platform.OS === 'android' ? 20 : 0 }}>
         <TouchableOpacity
           onPress={() => router.push('/location-picker?type=waypoint&append=1')}
           activeOpacity={0.7}

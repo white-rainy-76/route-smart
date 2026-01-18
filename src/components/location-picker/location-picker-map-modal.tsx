@@ -126,6 +126,7 @@ export function LocationPickerMapModal({
           <Map
             style={{ flex: 1 }}
             initialRegion={initialRegion}
+            showMapControls={false}
             onRegionChangeComplete={(next) => {
               // reverse-geocode when camera stops
               searchByRegion(next)

@@ -82,6 +82,7 @@ function AppContent() {
         }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(utils)" />
         <Stack.Screen name="(root)" />
       </Stack>
       <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} />
