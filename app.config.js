@@ -1,9 +1,12 @@
 require('dotenv').config()
 
+const GOOGLE_MAPS_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || ''
+
 module.exports = {
   expo: {
     name: 'Road Smart',
     slug: 'road-smart',
+    scheme: 'roadsmart',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/icon.png',
@@ -17,6 +20,7 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'us.roadsmart.app',
+
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSLocalNetworkUsageDescription:
@@ -45,12 +49,15 @@ module.exports = {
       [
         'react-native-maps',
         {
-          iosGoogleMapsApiKey:
-            process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ||
-            process.env.GOOGLE_MAPS_API_KEY,
-          androidGoogleMapsApiKey:
-            process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ||
-            process.env.GOOGLE_MAPS_API_KEY,
+          iosGoogleMapsApiKey: GOOGLE_MAPS_API_KEY,
+          androidGoogleMapsApiKey: GOOGLE_MAPS_API_KEY,
+        },
+      ],
+      [
+        'expo-location',
+        {
+          locationAlwaysAndWhenInUsePermission:
+            'Allow 4uscorp to use your location.',
         },
       ],
       'react-native-iap',
