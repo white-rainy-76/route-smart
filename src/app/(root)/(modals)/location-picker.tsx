@@ -8,7 +8,7 @@ import {
     LocationPickerSearch,
 } from '@/components/location-picker'
 import { pointsEqual } from '@/components/route-form/route-form.validation'
-import { ShowOnMapButton } from '@/components/ui/show-on-map-button'
+import { ShowOnMapButton } from '@/shared/ui/show-on-map-button'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import {

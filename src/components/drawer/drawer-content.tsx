@@ -2,8 +2,8 @@ import {
   MySubscriptionIcon,
   SavedRoutesIcon,
   SettingsIcon,
-} from '@/components/ui/icons'
-import { Typography } from '@/components/ui/typography'
+} from '@/shared/ui/icons'
+import { Typography } from '@/shared/ui/typography'
 import { useLogoutMutation } from '@/services/auth'
 import { useApp } from '@/shared/contexts/app-context'
 import { useDrawer } from '@/shared/contexts/drawer-context'

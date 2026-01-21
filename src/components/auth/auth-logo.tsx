@@ -1,4 +1,4 @@
-import { Typography } from '@/components/ui/typography'
+import { Typography } from '@/shared/ui/typography'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import { Ionicons } from '@expo/vector-icons'
 import { View } from 'react-native'

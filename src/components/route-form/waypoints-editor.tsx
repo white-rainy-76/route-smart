@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button'
-import { Typography } from '@/components/ui/typography'
+import { Button } from '@/shared/ui/button'
+import { Typography } from '@/shared/ui/typography'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import { useDirectionsStore } from '@/shared/stores/directions-store'

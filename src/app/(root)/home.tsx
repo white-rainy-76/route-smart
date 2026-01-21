@@ -1,4 +1,4 @@
-import { Map, MapBottomSheet } from '@/components/map'
+import { Map, MapBottomSheet } from '@/features/map'
 import { useDrawer } from '@/shared/contexts/drawer-context'
 import { useDirectionsStore } from '@/shared/stores/directions-store'
 import { MaterialIcons } from '@expo/vector-icons'

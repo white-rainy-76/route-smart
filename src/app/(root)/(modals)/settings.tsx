@@ -1,23 +1,23 @@
-import { Button } from '@/components/ui/button'
-import { Typography } from '@/components/ui/typography'
 import { RTL_LANGUAGES } from '@/i18n/config'
 import { useLocation } from '@/shared/hooks/use-location'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
-import { startLocationTracking, stopLocationTracking } from '@/shared/location'
+import { startLocationTracking, stopLocationTracking } from '@/shared/lib/location'
+import { Button } from '@/shared/ui/button'
+import { Typography } from '@/shared/ui/typography'
 import { MaterialIcons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
 import { useEffect, useRef } from 'react'
 import {
-    Alert,
-    AppState,
-    I18nManager,
-    Linking,
-    Pressable,
-    ScrollView,
-    TouchableOpacity,
-    View,
+  Alert,
+  AppState,
+  I18nManager,
+  Linking,
+  Pressable,
+  ScrollView,
+  TouchableOpacity,
+  View,
 } from 'react-native'
 import RNRestart from 'react-native-restart'
 

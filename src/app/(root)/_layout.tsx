@@ -1,6 +1,6 @@
 import { DrawerContent } from '@/components/drawer'
 import { DrawerProvider } from '@/shared/contexts/drawer-context'
-import { startLocationTracking } from '@/shared/location'
+import { startLocationTracking } from '@/shared/lib/location'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { Stack } from 'expo-router'
 import { useEffect, useMemo, useRef } from 'react'

@@ -1,4 +1,4 @@
-import { Typography } from '@/components/ui/typography'
+import { Typography } from '@/shared/ui/typography'
 import { View } from 'react-native'
 
 export function LocationPickerHistoryLabel() {

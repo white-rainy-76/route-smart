@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button'
-import { Typography } from '@/components/ui/typography'
+import { Button } from '@/shared/ui/button'
+import { Typography } from '@/shared/ui/typography'
 import { useGetDirectionsMutation } from '@/services/directions'
 import { useGetTollRoadsMutation } from '@/services/toll-roads/api'
 import { useGetTollsAlongPolylineSectionsMutation } from '@/services/tolls/get-tolls-along-polyline-sections/api'

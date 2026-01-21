@@ -1,4 +1,4 @@
-import { Typography } from '@/components/ui/typography'
+import { Typography } from '@/shared/ui/typography'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { MaterialIcons } from '@expo/vector-icons'
 import { TouchableOpacity, View } from 'react-native'

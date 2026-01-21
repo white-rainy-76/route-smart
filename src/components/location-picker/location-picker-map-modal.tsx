@@ -1,5 +1,6 @@
-import { Button } from '@/components/ui/button'
+import { Map } from '@/features/map'
 import { googleReverseGeocode } from '@/shared/lib/google-places/google-places'
+import { Button } from '@/shared/ui/button'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -12,7 +13,6 @@ import {
 } from 'react-native'
 import type { Region } from 'react-native-maps'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Map } from '../map/map'
 import type { LocationItem } from './location-picker-item'
 
 interface LocationPickerMapModalProps {

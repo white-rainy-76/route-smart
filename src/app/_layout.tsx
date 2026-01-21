@@ -5,6 +5,7 @@ import { queryClient } from '@/shared/api/query-client'
 import { AppProvider } from '@/shared/contexts/app-context'
 import { ThemeProvider } from '@/shared/contexts/theme-context'
 import { useTheme } from '@/shared/hooks/use-theme'
+import { initMapbox } from '@/shared/lib/mapbox/init-mapbox'
 import {
   Nunito_400Regular,
   Nunito_400Regular_Italic,
@@ -61,6 +62,11 @@ export default function RootLayout() {
 
 function AppContent() {
   const { resolvedTheme } = useTheme()
+
+  // Initialize Mapbox for Android
+  useEffect(() => {
+    initMapbox()
+  }, [])
 
   // Programmatically set status bar style
   useEffect(() => {

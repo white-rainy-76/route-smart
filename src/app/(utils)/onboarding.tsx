@@ -1,4 +1,4 @@
-import { Button, Screen, Typography } from '@/components/ui'
+import { Button, Screen, Typography } from '@/shared/ui'
 import { useApp } from '@/shared/contexts/app-context'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import { useRouter } from 'expo-router'
