@@ -2,6 +2,68 @@ require('dotenv').config()
 
 const GOOGLE_MAPS_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || ''
 
+// Определяем платформу для условного включения плагинов
+// EAS Build устанавливает EAS_BUILD_PLATFORM или EXPO_PUBLIC_PLATFORM
+// Если не установлено (локальная разработка), включаем оба плагина для совместимости
+const buildPlatform = process.env.EAS_BUILD_PLATFORM || process.env.EXPO_PUBLIC_PLATFORM
+
+const getPlugins = () => {
+  const basePlugins = [
+    'expo-router',
+    'expo-apple-authentication',
+    'expo-secure-store',
+    [
+      'expo-location',
+      {
+        locationAlwaysAndWhenInUsePermission:
+          'Allow 4uscorp to use your location.',
+      },
+    ],
+    'react-native-iap',
+    [
+      'expo-build-properties',
+      {
+        android: {
+          kotlinVersion: '2.2.0',
+        },
+      },
+    ],
+  ]
+
+  // На iOS - только react-native-maps
+  if (buildPlatform === 'ios') {
+    basePlugins.push([
+      'react-native-maps',
+      {
+        iosGoogleMapsApiKey: GOOGLE_MAPS_API_KEY,
+        // android не используется на iOS, но оставляем для совместимости
+        androidGoogleMapsApiKey: GOOGLE_MAPS_API_KEY,
+      },
+    ])
+  }
+  // На Android - только @rnmapbox/maps
+  // Не указываем RNMapboxMapsVersion, используем дефолтную (11.0.* для @rnmapbox/maps 10.2)
+  else if (buildPlatform === 'android') {
+    basePlugins.push('@rnmapbox/maps')
+  }
+  // Если платформа не определена (локальная разработка) - включаем оба
+  // Это позволяет работать в dev-режиме, но в production сборках будет только нужный
+  else {
+    basePlugins.push(
+      [
+        'react-native-maps',
+        {
+          iosGoogleMapsApiKey: GOOGLE_MAPS_API_KEY,
+          androidGoogleMapsApiKey: GOOGLE_MAPS_API_KEY,
+        },
+      ],
+      '@rnmapbox/maps',
+    )
+  }
+
+  return basePlugins
+}
+
 module.exports = {
   expo: {
     name: 'Road Smart',
@@ -42,34 +104,7 @@ module.exports = {
       bundler: 'metro',
       favicon: './assets/favicon.png',
     },
-    plugins: [
-      'expo-router',
-      'expo-apple-authentication',
-      'expo-secure-store',
-      [
-        'react-native-maps',
-        {
-          iosGoogleMapsApiKey: GOOGLE_MAPS_API_KEY,
-          androidGoogleMapsApiKey: GOOGLE_MAPS_API_KEY,
-        },
-      ],
-      [
-        'expo-location',
-        {
-          locationAlwaysAndWhenInUsePermission:
-            'Allow 4uscorp to use your location.',
-        },
-      ],
-      'react-native-iap',
-      [
-        'expo-build-properties',
-        {
-          android: {
-            kotlinVersion: '2.2.0',
-          },
-        },
-      ],
-    ],
+    plugins: getPlugins(),
     extra: {
       router: {},
       eas: {
