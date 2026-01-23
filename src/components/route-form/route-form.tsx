@@ -3,18 +3,22 @@ import { Typography } from '@/components/ui/typography'
 import { useGetDirectionsMutation } from '@/services/directions'
 import { useGetTollRoadsMutation } from '@/services/toll-roads/api'
 import { useGetTollsAlongPolylineSectionsMutation } from '@/services/tolls/get-tolls-along-polyline-sections/api'
+import { useGetWeighStationsAlongPolylineSectionsMutation } from '@/services/weigh-stations/get-weigh-stations-along-polyline-sections/api'
+import { useLocation } from '@/shared/hooks/use-location'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
+import { googleReverseGeocode } from '@/shared/lib/google-places/google-places'
 import { useDirectionsStore } from '@/shared/stores/directions-store'
-import { useRouteStore } from '@/shared/stores/route-store'
+import { RoutePoint, useRouteStore } from '@/shared/stores/route-store'
 import { useTollRoadsStore } from '@/shared/stores/toll-roads-store'
 import { useTollsStore } from '@/shared/stores/tolls-store'
+import { useWeighStationsStore } from '@/shared/stores/weigh-stations-store'
 import { MaterialIcons } from '@expo/vector-icons'
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { router } from 'expo-router'
 import { MotiView } from 'moti'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Alert, View } from 'react-native'
 import { routeFormSchema, validateRoutePoints } from './route-form.validation'
@@ -27,9 +31,9 @@ export function RouteForm({
 }: {
   onManageWaypoints?: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, currentLanguage } = useTranslation()
   const { resolvedTheme } = useTheme()
-  const { origin, destination, waypoints, hasOriginAndDestination } =
+  const { origin, destination, waypoints, hasOriginAndDestination, setOrigin } =
     useRouteStore()
   const setDirections = useDirectionsStore((s) => s.setDirections)
   const setDirectionsLoading = useDirectionsStore((s) => s.setLoading)
@@ -37,10 +41,15 @@ export function RouteForm({
   const setTollRoadsLoading = useTollRoadsStore((s) => s.setLoading)
   const setTolls = useTollsStore((s) => s.setTolls)
   const setTollsLoading = useTollsStore((s) => s.setLoading)
+  const setWeighStations = useWeighStationsStore((s) => s.setWeighStations)
+  const setWeighStationsLoading = useWeighStationsStore((s) => s.setLoading)
   const savedRouteId = useDirectionsStore((s) => s.savedRouteId)
+  const { getCurrentLocation } = useLocation()
+  const hasInitializedLocation = useRef(false)
 
   const tollRoadsMutation = useGetTollRoadsMutation()
   const tollsMutation = useGetTollsAlongPolylineSectionsMutation()
+  const weighStationsMutation = useGetWeighStationsAlongPolylineSectionsMutation()
 
   const [isCollapsed, setIsCollapsed] = useState(false)
 
@@ -60,30 +69,36 @@ export function RouteForm({
       if (routeSectionIds.length === 0) {
         setTollRoadsLoading(false)
         setTollsLoading(false)
+        setWeighStationsLoading(false)
         return
       }
 
-      // Устанавливаем loading для toll-roads и tolls
+      // Устанавливаем loading для toll-roads, tolls и weigh stations
       setTollRoadsLoading(true)
       setTollsLoading(true)
+      setWeighStationsLoading(true)
 
       try {
-        // Делаем два параллельных запроса
-        const [tollRoads, tolls] = await Promise.all([
+        // Делаем три параллельных запроса
+        const [tollRoads, tolls, weighStations] = await Promise.all([
           tollRoadsMutation.mutateAsync(routeSectionIds),
           tollsMutation.mutateAsync(routeSectionIds),
+          weighStationsMutation.mutateAsync(routeSectionIds),
         ])
 
         setTollRoads(tollRoads)
         setTolls(tolls)
+        setWeighStations(weighStations)
       } catch (error) {
         console.error('Failed to fetch tolls data:', error)
         // В случае ошибки очищаем данные
         setTollRoads(null)
         setTolls(null)
+        setWeighStations(null)
       } finally {
         setTollRoadsLoading(false)
         setTollsLoading(false)
+        setWeighStationsLoading(false)
       }
     },
   })
@@ -92,6 +107,80 @@ export function RouteForm({
   useEffect(() => {
     setDirectionsLoading(directionsMutation.isPending)
   }, [directionsMutation.isPending, setDirectionsLoading])
+
+  // Автоматически устанавливаем текущее местоположение как origin при первом монтировании
+  useEffect(() => {
+    // Выполняем только один раз при монтировании
+    if (hasInitializedLocation.current) return
+
+    const initializeCurrentLocation = async () => {
+      hasInitializedLocation.current = true
+
+      // Проверяем, не установлен ли уже origin
+      const currentOrigin = useRouteStore.getState().origin
+      if (currentOrigin) return
+     
+      try {
+        // Получаем текущее местоположение (getCurrentLocation сам запросит разрешение, если нужно)
+        const location = await getCurrentLocation()
+      
+
+        if (!location) return
+
+        // Проверяем еще раз, не установлен ли origin пока мы получали локацию
+        const currentOriginAfterLocation = useRouteStore.getState().origin
+        if (currentOriginAfterLocation) return
+
+        // Пытаемся получить адрес через reverse geocoding
+        let locationPoint: RoutePoint | null = null
+      
+
+        try {
+          const geocodeResult = await googleReverseGeocode({
+            latitude: location.latitude,
+            longitude: location.longitude,
+            language: currentLanguage,
+          })
+
+          if (geocodeResult) {
+            locationPoint = {
+              id: geocodeResult.placeId,
+              name: geocodeResult.name,
+              address: geocodeResult.address,
+              latitude: geocodeResult.latitude,
+              longitude: geocodeResult.longitude,
+            }
+          }
+        } catch (geocodeError) {
+          console.warn('Reverse geocoding failed:', geocodeError)
+        }
+
+        // Если reverse geocoding не сработал, используем координаты с базовым названием
+        if (!locationPoint) {
+          const myLocationText =
+            currentLanguage === 'ru' ? 'Моё местоположение' : 'My location'
+          locationPoint = {
+            id: `current-location-${Date.now()}`,
+            name: myLocationText,
+            address: myLocationText,
+            latitude: location.latitude,
+            longitude: location.longitude,
+          }
+        }
+
+        // Устанавливаем origin только если он все еще не установлен (проверка на race condition)
+        const finalOrigin = useRouteStore.getState().origin
+        if (!finalOrigin) {
+          setOrigin(locationPoint)
+        }
+      } catch (error) {
+        console.warn('Failed to initialize current location:', error)
+      }
+    }
+
+    initializeCurrentLocation()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Пустой массив зависимостей - выполняется только при монтировании
 
   // React Hook Form
   const {
@@ -161,6 +250,7 @@ export function RouteForm({
       setDirections(null)
       setTollRoads(null)
       setTolls(null)
+      setWeighStations(null)
 
       const directions = await directionsMutation.mutateAsync({
         origin: {
