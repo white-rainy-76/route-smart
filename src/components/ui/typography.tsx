@@ -71,6 +71,13 @@ export function Typography({
   const variantStyle = variantStyles[variant]
   const finalWeight = weight || variantStyle.defaultWeight
 
+  const defaultColor =
+    !className && !color
+      ? variant === 'h1' || variant === 'h2'
+        ? '#383838'
+        : '#77808D'
+      : undefined
+
   const textStyle = {
     fontFamily: Platform.select({
       ios: fontFamilyMap[finalWeight],
@@ -85,8 +92,8 @@ export function Typography({
       default: 'normal' as const, // В React Native используем fontFamily для веса
     }),
     textAlign: align,
-    color:
-      color || (variant === 'h1' || variant === 'h2' ? '#383838' : '#77808D'),
+    ...(color && { color }),
+    ...(defaultColor && { color: defaultColor }),
   }
 
   return (
