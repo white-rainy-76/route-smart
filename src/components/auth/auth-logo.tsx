@@ -1,44 +1,33 @@
 import { Typography } from '@/components/ui/typography'
 import { useTranslation } from '@/shared/hooks/use-translation'
-import { Ionicons } from '@expo/vector-icons'
+import { Image } from 'expo-image'
 import { View } from 'react-native'
 
 interface AuthLogoProps {
-  icon: keyof typeof Ionicons.glyphMap
+  icon?: string // Deprecated, kept for backward compatibility
   titleKey: string
   subtitleKey: string
 }
 
-export function AuthLogo({ icon, titleKey, subtitleKey }: AuthLogoProps) {
+export function AuthLogo({ titleKey, subtitleKey }: AuthLogoProps) {
   const { t } = useTranslation()
 
   return (
     <View className="items-center mb-12">
-      <View className="w-28 h-28 rounded-3xl items-center justify-center mb-6 shadow-lg shadow-primary/30 overflow-hidden relative">
-        {/* Primary Background */}
-        <View
-          className="absolute inset-0"
-          style={{
-            backgroundColor: '#4964D8',
-          }}
+      <View
+        className="items-center justify-center mb-6"
+        style={{
+          width: 88,
+          height: 88,
+          borderRadius: 24,
+          overflow: 'hidden',
+        }}>
+        {/* Logo Image */}
+        <Image
+          source={require('../../../assets/images/logo.png')}
+          style={{ width: 88, height: 88 }}
+          contentFit="contain"
         />
-        {/* Decorative Circle */}
-        <View
-          className="absolute -top-4 -right-4 w-16 h-16 rounded-full opacity-30"
-          style={{
-            backgroundColor: '#FFFFFF',
-          }}
-        />
-        <View
-          className="absolute -bottom-2 -left-2 w-12 h-12 rounded-full opacity-20"
-          style={{
-            backgroundColor: '#FFFFFF',
-          }}
-        />
-        {/* Main Icon */}
-        <View className="relative z-10">
-          <Ionicons name={icon} size={44} color="#FFFFFF" />
-        </View>
       </View>
       <Typography
         variant="h1"
