@@ -26,6 +26,7 @@ import {
   useTemporaryLocationMarker,
 } from './markers/temporary-location-marker-handler'
 import { TollsMarkers } from './markers/tolls/tolls-markers'
+import { WeighStationsMarkers } from './markers/weigh-stations-markers'
 import { useDriveModeCamera } from './useDriveModeCamera'
 
 interface MapProps extends Omit<MapViewProps, 'provider'> {
@@ -82,7 +83,6 @@ export const Map = memo(function Map({
     (s) => s.selectedRouteSectionId,
   )
   const isTripActive = useDirectionsStore((s) => s.isTripActive)
-  console.log('map' )
   // Анимированный стиль для кнопок - позиционируется чуть выше bottom sheet
   const locationButtonStyle = useAnimatedStyle(() => {
     if (!buttonBottom || !buttonOpacity) {
@@ -277,6 +277,9 @@ export const Map = memo(function Map({
 
         {/* Tolls markers - только для выбранной секции */}
         <TollsMarkers />
+
+        {/* Weigh stations markers - только для выбранной секции */}
+        <WeighStationsMarkers />
 
         {/* Маркер местоположения пользователя */}
         {driveModeEnabled ? <LocationPuckMarker /> : <UserLocationMarker />}
