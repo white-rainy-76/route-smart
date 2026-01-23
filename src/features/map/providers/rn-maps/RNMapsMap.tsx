@@ -30,6 +30,7 @@ import {
   useTemporaryLocationMarker,
 } from './markers/temporary-location-marker-handler'
 import { TollsMarkers } from './markers/tolls/tolls-markers'
+import { WeighStationsMarkers } from './markers/weigh-stations-markers'
 
 interface RNMapsMapProps extends Omit<RNMapsViewProps, 'provider'> {
   className?: string
@@ -212,6 +213,9 @@ export const RNMapsMap = memo(function RNMapsMap({
 
         <RouteTimeMarkers />
         <TollsMarkers />
+
+        {/* Weigh stations markers - только для выбранной секции */}
+        <WeighStationsMarkers />
 
         {/* Маркер местоположения пользователя */}
         {driveModeEnabled ? <LocationPuckMarker /> : <UserLocationMarker />}

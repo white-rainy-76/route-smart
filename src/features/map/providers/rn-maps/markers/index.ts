@@ -6,4 +6,5 @@ export {
     useTemporaryLocationMarker
 } from './temporary-location-marker-handler'
 export { TollsMarkers } from './tolls/tolls-markers'
+export { WeighStationsMarkers } from './weigh-stations-markers'
 
