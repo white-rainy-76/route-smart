@@ -6,7 +6,7 @@ This project uses **Expo + EAS** and **`react-native-iap` (StoreKit 2)**.
 
 - Create an **auto‑renewable subscription**.
 - Ensure **Product ID** matches exactly:
-  - `us.roadsmart.app.sub.test.monthly`
+  - `us.roadsmart.app.sub.monthly`
 - Put it into a **Subscription Group** (required).
 - Fill **localization**, **pricing**, and (if used) **intro offer / free trial**.
 - Complete App Store Connect “Agreements, Tax, and Banking”.
