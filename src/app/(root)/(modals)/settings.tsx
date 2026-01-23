@@ -10,14 +10,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
 import { useEffect, useRef } from 'react'
 import {
-    Alert,
-    AppState,
-    I18nManager,
-    Linking,
-    Pressable,
-    ScrollView,
-    TouchableOpacity,
-    View,
+  Alert,
+  AppState,
+  I18nManager,
+  Linking,
+  Pressable,
+  ScrollView,
+  TouchableOpacity,
+  View,
 } from 'react-native'
 import RNRestart from 'react-native-restart'
 

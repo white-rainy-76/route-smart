@@ -125,11 +125,18 @@ export default function OnboardingScreen() {
                     alignItems: 'center',
                     maxWidth: 320,
                   }}>
-                  <Typography variant="h1" align="center">
+                  <Typography
+                    variant="h1"
+                    align="center"
+                    className="text-foreground">
                     {slide.title}
                   </Typography>
                   <View style={{ marginTop: 16 }}>
-                    <Typography variant="body" weight="600" align="center">
+                    <Typography
+                      variant="body"
+                      weight="600"
+                      align="center"
+                      className="text-muted-foreground">
                       {slide.description}
                     </Typography>
                   </View>
@@ -158,17 +165,17 @@ export default function OnboardingScreen() {
             alignItems: 'center',
           }}>
           <View
+            className="bg-muted"
             style={{
               width: 90,
               height: 6,
-              backgroundColor: '#EFEFF4',
               borderRadius: 4,
             }}>
             <View
+              className="bg-primary"
               style={{
                 width: 30,
                 height: 6,
-                backgroundColor: '#4964D8',
                 borderRadius: 4,
                 position: 'absolute',
                 left: (90 / slides.length) * currentIndex,
