@@ -1,30 +1,37 @@
 import {
-    LocationItem,
-    LocationPickerEmpty,
-    LocationPickerHeader,
-    LocationPickerHistoryLabel,
-    LocationPickerItem,
-    LocationPickerMapModal,
-    LocationPickerSearch,
+  LocationItem,
+  LocationPickerEmpty,
+  LocationPickerHeader,
+  LocationPickerHistoryLabel,
+  LocationPickerItem,
+  LocationPickerMapModal,
+  LocationPickerSearch,
 } from '@/components/location-picker'
 import { pointsEqual } from '@/components/route-form/route-form.validation'
 import { ShowOnMapButton } from '@/components/ui/show-on-map-button'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import {
-    googlePlaceDetails,
-    googlePlacesAutocomplete,
+  googlePlaceDetails,
+  googlePlacesAutocomplete,
 } from '@/shared/lib/google-places/google-places'
 import {
-    loadLocationPickerHistory,
-    saveLocationPickerHistoryItem,
+  loadLocationPickerHistory,
+  saveLocationPickerHistoryItem,
 } from '@/shared/lib/location-picker/history'
 import { useDirectionsStore } from '@/shared/stores/directions-store'
 import { RoutePoint, useRouteStore } from '@/shared/stores/route-store'
 import { useFocusEffect } from '@react-navigation/native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ActivityIndicator, Alert, FlatList, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Keyboard,
+  Platform,
+  View,
+} from 'react-native'
 
 export default function LocationPickerScreen() {
   const router = useRouter()
@@ -52,6 +59,7 @@ export default function LocationPickerScreen() {
   const [results, setResults] = useState<LocationItem[]>([])
   const [isMapVisible, setIsMapVisible] = useState(false)
   const [isCommitting, setIsCommitting] = useState(false)
+  const [keyboardOffset, setKeyboardOffset] = useState(0)
 
   const isMountedRef = useRef(true)
 
@@ -64,6 +72,23 @@ export default function LocationPickerScreen() {
     })
     return () => {
       isMountedRef.current = false
+    }
+  }, [])
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
+
+    const showSub = Keyboard.addListener(showEvent, (event) => {
+      setKeyboardOffset(event.endCoordinates.height - 30)
+    })
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardOffset(0)
+    })
+
+    return () => {
+      showSub.remove()
+      hideSub.remove()
     }
   }, [])
 
@@ -384,7 +409,9 @@ export default function LocationPickerScreen() {
         }
       />
 
-      <View className="absolute left-0 right-0 bottom-0">
+      <View
+        className="absolute left-0 right-0"
+        style={{ bottom: keyboardOffset }}>
         <ShowOnMapButton onPress={openMap} />
       </View>
 
