@@ -1,15 +1,12 @@
 import { z } from 'zod'
 import {
-  getMyEntitlementResponseSchema,
-  subscriptionEntitlementSchema,
-  verifyAppleSubscriptionResponseSchema,
+  subscriptionStatusResponseSchema,
 } from '../contracts/subscription.contract'
 
-export type SubscriptionEntitlement = z.infer<typeof subscriptionEntitlementSchema>
-export type VerifyAppleSubscriptionResponse = z.infer<
-  typeof verifyAppleSubscriptionResponseSchema
+
+export type SubscriptionStatusResponse = z.infer<
+  typeof subscriptionStatusResponseSchema
 >
-export type GetMyEntitlementResponse = z.infer<typeof getMyEntitlementResponseSchema>
 
 
 

@@ -227,6 +227,31 @@
       "other": "Other"
     }
   },
+  "locationPermission": {
+    "title": "We need your location",
+    "description": "Smart Tolls uses geolocation to show you on the map and build routes with the total cost of the trip calculated.",
+    "allowAccess": "Allow access",
+    "later": "Later"
+  },
+  "paywall": {
+    "title": "Unlock Smart Tolls",
+    "description": "Smart Tolls helps you plan routes, avoid expensive tolls, and know your full trip cost before you drive.",
+    "feature1": "Unlimited route planning",
+    "feature2": "Toll cost breakdown & avoid tolls",
+    "feature3": "Save and reuse routes",
+    "startTrial": "Start 7-Day Free Trial",
+    "restore": "Restore subscription",
+    "processing": "Processing…",
+    "thenPerMonth": "Then {{price}}/month. Cancel anytime.",
+    "alreadySubscribedRestore": "Already subscribed? Restore purchases",
+    "errorNoSubscription": "No active subscription found.",
+    "errorPurchaseFailed": "Purchase failed.",
+    "errorRestoreFailed": "Could not restore subscription.",
+    "errorStoreConnection": "Store connection failed.",
+    "errorInitStore": "Failed to initialize store connection.",
+    "errorStartPurchase": "Failed to start purchase flow.",
+    "errorFinalization": "Purchase completed but finalization failed."
+  },
   "subscription": {
     "title": "My subscription",
     "description": "Manage your subscription status and billing.",

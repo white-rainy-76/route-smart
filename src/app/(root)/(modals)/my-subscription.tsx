@@ -3,14 +3,19 @@ import { Typography } from '@/shared/ui/typography'
 import { useApp } from '@/shared/contexts/app-context'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
+import {
+  getSubscriptionStatusLabel,
+  normalizeSubscriptionStatus,
+  SUBSCRIPTION_STATUS,
+} from '@/shared/lib/subscription-status'
 import { MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import {
-    Linking,
-    Platform,
-    ScrollView,
-    TouchableOpacity,
-    View,
+  Linking,
+  Platform,
+  ScrollView,
+  TouchableOpacity,
+  View,
 } from 'react-native'
 
 export default function MySubscriptionScreen() {
@@ -18,6 +23,9 @@ export default function MySubscriptionScreen() {
   const { resolvedTheme } = useTheme()
   const {
     hasActiveSubscription,
+    hasSubscriptionHistory,
+    subscriptionStatus,
+    subscriptionExpiresAtUtc,
     refreshSubscriptionStatus,
     isSubscriptionLoading,
   } = useApp()
@@ -61,6 +69,49 @@ export default function MySubscriptionScreen() {
         elevation: 2,
       }}>
       {children}
+    </View>
+  )
+
+  const normalizedStatus = normalizeSubscriptionStatus(subscriptionStatus)
+  const statusLabel = hasSubscriptionHistory
+    ? getSubscriptionStatusLabel(normalizedStatus)
+    : 'No subscription'
+  const isCanceled = normalizedStatus === SUBSCRIPTION_STATUS.CANCELED
+  const paywallCta = hasSubscriptionHistory
+    ? 'Restore subscription'
+    : 'Subscribe'
+
+  const formatExpiresAt = (value: string | null) => {
+    if (!value) return '—'
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return '—'
+    return date.toLocaleDateString()
+  }
+
+  const formatRemaining = (value: string | null) => {
+    if (!value) return '—'
+    const date = new Date(value)
+    const diff = date.getTime() - Date.now()
+    if (Number.isNaN(date.getTime())) return '—'
+    if (diff <= 0) return 'Expired'
+    const totalHours = Math.floor(diff / (1000 * 60 * 60))
+    const days = Math.floor(totalHours / 24)
+    const hours = totalHours % 24
+    if (days > 0) {
+      return `${days}d ${hours}h`
+    }
+    const minutes = Math.floor((diff / (1000 * 60)) % 60)
+    return `${hours}h ${minutes}m`
+  }
+
+  const InfoRow = ({ label, value }: { label: string; value: string }) => (
+    <View className="flex-row items-center justify-between py-2">
+      <Typography variant="caption" style={{ color: mutedColor, fontSize: 13 }}>
+        {label}
+      </Typography>
+      <Typography variant="body" weight="600" style={{ color: textColor }}>
+        {value}
+      </Typography>
     </View>
   )
 
@@ -174,6 +225,26 @@ export default function MySubscriptionScreen() {
           </View>
         </SettingCard>
 
+        {/* Details Section */}
+        <SectionHeader title={t('subscription.details') || 'Details'} />
+        <SettingCard>
+          <View className="px-5 py-4">
+            <InfoRow label="Status" value={statusLabel} />
+            <InfoRow
+              label="Expires"
+              value={formatExpiresAt(subscriptionExpiresAtUtc)}
+            />
+            <InfoRow
+              label="Remaining"
+              value={formatRemaining(subscriptionExpiresAtUtc)}
+            />
+            <InfoRow
+              label="Canceled"
+              value={hasSubscriptionHistory ? (isCanceled ? 'Yes' : 'No') : '—'}
+            />
+          </View>
+        </SettingCard>
+
         {/* Actions Section */}
         <SectionHeader title={t('subscription.actions') || 'Actions'} />
         <SettingCard>
@@ -203,7 +274,7 @@ export default function MySubscriptionScreen() {
                 size="sm"
                 onPress={() => router.replace('/subscription')}
                 style={{ width: '100%' }}>
-                {t('subscription.goToPaywall')}
+                {t('subscription.goToPaywall') || paywallCta}
               </Button>
             )}
           </View>

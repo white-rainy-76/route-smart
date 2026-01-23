@@ -75,10 +75,18 @@ export async function removeUserId(): Promise<void> {
 }
 
 /**
+ * Save user email to AsyncStorage
+ */
+
+/**
  * Clear all tokens and user data
  */
 export async function clearAllTokens(): Promise<void> {
-  await Promise.all([removeAccessToken(), removeRefreshToken(), removeUserId()])
+  await Promise.all([
+    removeAccessToken(),
+    removeRefreshToken(),
+    removeUserId(),
+  ])
 }
 
 /**

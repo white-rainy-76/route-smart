@@ -43,7 +43,7 @@ Example:
 {
   "entitlement": {
     "isActive": true,
-    "productId": "us.roadsmart.app.sub.test.monthly",
+    "productId": "us.roadsmart.app.sub.monthly",
     "expiresAt": "2026-02-15T10:00:00.000Z",
     "originalTransactionId": "2000001234567890",
     "environment": "Sandbox"
@@ -73,7 +73,7 @@ The app now sends `appAccountToken` (UUID) with every purchase request to strong
 
 ```json
 {
-  "productId": "us.roadsmart.app.sub.test.monthly",
+  "productId": "us.roadsmart.app.sub.monthly",
   "transactionJws": "...",
   "transactionId": "...",
   "originalTransactionId": "...",

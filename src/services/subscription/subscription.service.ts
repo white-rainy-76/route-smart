@@ -2,48 +2,32 @@ import { api } from '@/shared/api/api.instance'
 import { responseContract } from '@/shared/api/api.lib'
 import { AxiosRequestConfig } from 'axios'
 import {
-  getMyEntitlementResponseSchema,
-  verifyAppleSubscriptionPayloadSchema,
-  verifyAppleSubscriptionResponseSchema,
+  subscriptionStatusPayloadSchema,
+  subscriptionStatusResponseSchema
 } from './contracts/subscription.contract'
-import { VerifyAppleSubscriptionPayload } from './types/subscription.payload'
 import {
-  GetMyEntitlementResponse,
-  VerifyAppleSubscriptionResponse,
+  SubscriptionStatusResponse
 } from './types/subscription'
+import {
+  SubscriptionStatusPayload
+} from './types/subscription.payload'
 
-/**
- * Backend endpoints are intentionally "stubs" — adjust paths to your backend.
- *
- * Recommended backend behavior:
- * - Verify Apple JWS / transactionId via App Store Server API
- * - Persist entitlement per user
- * - Return canonical entitlement to the app
- */
 const ENDPOINTS = {
-  verifyApple: '/billing-api/iap/apple/verify',
-  myEntitlement: '/billing-api/iap/entitlement',
+ 
+  subscriptionStatus: 'payment-api/api/billing/subscription/status',
 } as const
 
-export async function verifyAppleSubscription(
-  payload: VerifyAppleSubscriptionPayload,
-  signal?: AbortSignal,
-): Promise<VerifyAppleSubscriptionResponse> {
-  const validatedPayload = verifyAppleSubscriptionPayloadSchema.parse(payload)
-  const config: AxiosRequestConfig = { signal }
-  const response = await api
-    .post(ENDPOINTS.verifyApple, validatedPayload, config)
-    .then(responseContract(verifyAppleSubscriptionResponseSchema))
-  return response.data
-}
 
-export async function getMyEntitlement(
+
+export async function getSubscriptionStatus(
+  payload: SubscriptionStatusPayload,
   signal?: AbortSignal,
-): Promise<GetMyEntitlementResponse> {
-  const config: AxiosRequestConfig = { signal }
+): Promise<SubscriptionStatusResponse> {
+  const validatedPayload = subscriptionStatusPayloadSchema.parse(payload)
+  const config: AxiosRequestConfig = { signal, params: validatedPayload }
   const response = await api
-    .get(ENDPOINTS.myEntitlement, config)
-    .then(responseContract(getMyEntitlementResponseSchema))
+    .get(ENDPOINTS.subscriptionStatus, config)
+    .then(responseContract(subscriptionStatusResponseSchema))
   return response.data
 }
 

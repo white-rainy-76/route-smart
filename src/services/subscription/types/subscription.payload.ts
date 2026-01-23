@@ -1,8 +1,10 @@
 import { z } from 'zod'
-import { verifyAppleSubscriptionPayloadSchema } from '../contracts/subscription.contract'
+import {
+  subscriptionStatusPayloadSchema,
+} from '../contracts/subscription.contract'
 
-export type VerifyAppleSubscriptionPayload = z.infer<
-  typeof verifyAppleSubscriptionPayloadSchema
+export type SubscriptionStatusPayload = z.infer<
+  typeof subscriptionStatusPayloadSchema
 >
 
 

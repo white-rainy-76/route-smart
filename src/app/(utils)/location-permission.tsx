@@ -3,14 +3,16 @@ import { LocationIllustration } from '@/shared/ui/illustrations'
 import { Typography } from '@/shared/ui/typography'
 import { useApp } from '@/shared/contexts/app-context'
 import { useLocation } from '@/shared/hooks/use-location'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
 import { Platform, View } from 'react-native'
 
 export default function LocationPermissionScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { permissionStatus, requestPermission, isLoading } = useLocation()
-  const { setSeenLocationPermission } = useApp()
+  const { setSeenLocationPermission, hasActiveSubscription } = useApp()
 
   // Mark that user has seen this screen
   useEffect(() => {
@@ -18,7 +20,8 @@ export default function LocationPermissionScreen() {
   }, [setSeenLocationPermission])
 
   // Skip subscription screen on Android (not implemented yet)
-  const nextRoute = Platform.OS === 'ios' ? '/subscription' : '/home'
+  const nextRoute =
+    Platform.OS === 'ios' && !hasActiveSubscription ? '/subscription' : '/home'
 
   const handleAllowAccess = async () => {
     const granted = await requestPermission()
@@ -52,14 +55,20 @@ export default function LocationPermissionScreen() {
         <View
           className="items-center"
           style={{ paddingHorizontal: 48, marginTop: 54 }}>
-          <Typography variant="h1" align="center">
-            We need your location
+          <Typography
+            variant="h1"
+            align="center"
+            className="text-foreground">
+            {t('locationPermission.title')}
           </Typography>
 
           <View style={{ marginTop: 16, marginBottom: 28 }}>
-            <Typography variant="body" weight="600" align="center">
-              Smart Tolls uses geolocation to show you on the map and build
-              routes with the total cost of the trip calculated.
+            <Typography
+              variant="body"
+              weight="600"
+              align="center"
+              className="text-muted-foreground">
+              {t('locationPermission.description')}
             </Typography>
           </View>
         </View>
@@ -73,14 +82,14 @@ export default function LocationPermissionScreen() {
               className="mx-auto"
               size="md"
               disabled={isLoading || permissionStatus?.granted}>
-              Allow access
+              {t('locationPermission.allowAccess')}
             </Button>
             <Button
               onPress={handleLater}
               className="mx-auto"
               variant="outline"
               size="md">
-              Later
+              {t('locationPermission.later')}
             </Button>
           </View>
         </View>

@@ -30,7 +30,7 @@ const createLoginSchema = (t: (key: string) => string) =>
 export function LoginForm() {
   const { t } = useTranslation()
   const router = useRouter()
-  const { setAuthenticated } = useApp()
+  const { setAuthenticated, refreshSubscriptionStatus } = useApp()
   const [serverError, setServerError] = useState<string | null>(null)
 
   const loginSchema = createLoginSchema(t)
@@ -56,6 +56,7 @@ export function LoginForm() {
       await saveTokens(data.token, data.refreshToken, data.userId)
       // Update auth state
       await setAuthenticated(true)
+      await refreshSubscriptionStatus(data.userId)
       // Navigate to index to handle routing logic
       router.replace('/')
     },
@@ -83,6 +84,7 @@ export function LoginForm() {
       await saveTokens(data.token, data.refreshToken, data.userId)
       // Update auth state
       await setAuthenticated(true)
+      await refreshSubscriptionStatus(data.userId)
       // Navigate to index to handle routing logic
       router.replace('/')
     },
@@ -128,7 +130,6 @@ export function LoginForm() {
       <AuthBackground />
       <View className="flex-1 px-6 pt-16 pb-8 relative z-10">
         <AuthLogo
-          icon="map"
           titleKey="auth.welcomeBack"
           subtitleKey="auth.loginSubtitle"
         />

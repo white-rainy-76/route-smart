@@ -1,9 +1,8 @@
 import { Button } from '@/shared/ui/button'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import { useDirectionsStore } from '@/shared/stores/directions-store'
-import { useMemo, useState } from 'react'
-import { View } from 'react-native'
-import { DiscountCardModal } from './discount-card-modal'
+import { useMemo } from 'react'
+import { Linking, View } from 'react-native'
 
 interface FuelInfoButtonsProps {
   onStartTrip?: () => void
@@ -20,8 +19,6 @@ export function FuelInfoButtons({
     (s) => s.selectedRouteSectionId,
   )
   const isTripActive = useDirectionsStore((s) => s.isTripActive)
-  const [isDiscountCardModalVisible, setIsDiscountCardModalVisible] =
-    useState(false)
 
   const selectedSection = useMemo(() => {
     if (!directions?.route || directions.route.length === 0) return null
@@ -43,15 +40,21 @@ export function FuelInfoButtons({
     }
   }
 
+  const handleDiscountCardPress = async () => {
+    const url = 'https://fuelsmart.us/smart_tolls_application'
+    const canOpen = await Linking.canOpenURL(url)
+    if (canOpen) {
+      await Linking.openURL(url)
+    }
+  }
+
   return (
     <View className="gap-2" style={{ marginTop: 16 }}>
       {!isTripActive && (
         <Button
           variant="outline"
           size="md"
-          onPress={() => {
-            setIsDiscountCardModalVisible(true)
-          }}
+          onPress={handleDiscountCardPress}
           style={{ width: '100%' }}>
           {t('fuelInfo.getDiscountCard')}
         </Button>
@@ -63,15 +66,6 @@ export function FuelInfoButtons({
         style={{ width: '100%' }}>
         {isTripActive ? t('fuelInfo.endTrip') : t('fuelInfo.go')}
       </Button>
-
-      <DiscountCardModal
-        visible={isDiscountCardModalVisible}
-        onClose={() => setIsDiscountCardModalVisible(false)}
-        onSubmit={(data) => {
-          // TODO: Handle form submission
-          console.log('Discount card form submitted:', data)
-        }}
-      />
     </View>
   )
 }
