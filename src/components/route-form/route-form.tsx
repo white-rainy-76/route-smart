@@ -1,5 +1,3 @@
-import { Button } from '@/shared/ui/button'
-import { Typography } from '@/shared/ui/typography'
 import { useGetDirectionsMutation } from '@/services/directions'
 import { useGetTollRoadsMutation } from '@/services/toll-roads/api'
 import { useGetTollsAlongPolylineSectionsMutation } from '@/services/tolls/get-tolls-along-polyline-sections/api'
@@ -8,11 +6,24 @@ import { useLocation } from '@/shared/hooks/use-location'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import { googleReverseGeocode } from '@/shared/lib/google-places/google-places'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
-import { RoutePoint, useRouteStore } from '@/shared/stores/route-store'
-import { useTollRoadsStore } from '@/shared/stores/toll-roads-store'
-import { useTollsStore } from '@/shared/stores/tolls-store'
-import { useWeighStationsStore } from '@/shared/stores/weigh-stations-store'
+import { Button } from '@/shared/ui/button'
+import { Typography } from '@/shared/ui/typography'
+import {
+  useDirectionsActions,
+  useDirectionsSavedRouteId,
+} from '@/stores/directions/hooks'
+import {
+  useHasOriginAndDestination,
+  useRouteActions,
+  useRouteDestination,
+  useRouteOrigin,
+  useRouteWaypoints,
+} from '@/stores/route/hooks'
+import { useRouteStore } from '@/stores/route/routeStore'
+import type { RoutePoint } from '@/stores/route/types'
+import { useTollRoadsActions } from '@/stores/toll-roads/hooks'
+import { useTollsActions } from '@/stores/tolls/hooks'
+import { useWeighStationsActions } from '@/stores/weigh-stations/hooks'
 import { MaterialIcons } from '@expo/vector-icons'
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -33,17 +44,17 @@ export function RouteForm({
 }) {
   const { t, currentLanguage } = useTranslation()
   const { resolvedTheme } = useTheme()
-  const { origin, destination, waypoints, hasOriginAndDestination, setOrigin } =
-    useRouteStore()
-  const setDirections = useDirectionsStore((s) => s.setDirections)
-  const setDirectionsLoading = useDirectionsStore((s) => s.setLoading)
-  const setTollRoads = useTollRoadsStore((s) => s.setTollRoads)
-  const setTollRoadsLoading = useTollRoadsStore((s) => s.setLoading)
-  const setTolls = useTollsStore((s) => s.setTolls)
-  const setTollsLoading = useTollsStore((s) => s.setLoading)
-  const setWeighStations = useWeighStationsStore((s) => s.setWeighStations)
-  const setWeighStationsLoading = useWeighStationsStore((s) => s.setLoading)
-  const savedRouteId = useDirectionsStore((s) => s.savedRouteId)
+  const origin = useRouteOrigin()
+  const destination = useRouteDestination()
+  const waypoints = useRouteWaypoints()
+  const hasOriginAndDestination = useHasOriginAndDestination()
+  const { setOrigin } = useRouteActions()
+  const { setDirections, setLoading: setDirectionsLoading } = useDirectionsActions()
+  const { setTollRoads, setLoading: setTollRoadsLoading } = useTollRoadsActions()
+  const { setTolls, setLoading: setTollsLoading } = useTollsActions()
+  const { setWeighStations, setLoading: setWeighStationsLoading } =
+    useWeighStationsActions()
+  const savedRouteId = useDirectionsSavedRouteId()
   const { getCurrentLocation } = useLocation()
   const hasInitializedLocation = useRef(false)
 
@@ -243,8 +254,6 @@ export function RouteForm({
     const mpgValue = mpgValueRaw.length === 0 ? 0 : Number(mpgValueRaw)
 
     try {
-      const savedRouteId = useDirectionsStore.getState().savedRouteId
-
       // Очистить предыдущий маршрут/толлы перед новым расчетом (особенно важно для Android,
       // где Polyline иногда "залипает" визуально до полного размонтирования).
       setDirections(null)
@@ -370,7 +379,7 @@ export function RouteForm({
                     waypointsCount={totalPointsCount}
                     valueText={destinationValueText}
                     numberOfLines={4}
-                    showAddButton={hasOriginAndDestination()}
+                    showAddButton={hasOriginAndDestination}
                     onPress={handleDestinationPress}
                     onAddPress={handleAddWaypoint}
                     icon="place"
@@ -436,7 +445,7 @@ export function RouteForm({
                 onPress={handleSubmit(onSubmit)}
                 style={{ width: '100%' }}
                 disabled={
-                  !hasOriginAndDestination() || directionsMutation.isPending
+                  !hasOriginAndDestination || directionsMutation.isPending
                 }>
                 {savedRouteId
                   ? t('routeForm.buildFromTemplate') || 'Build from Template'

@@ -1,6 +1,6 @@
 import { Map, MapBottomSheet } from '@/features/map'
 import { useDrawer } from '@/shared/contexts/drawer-context'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
+import { useDirectionsActions } from '@/stores/directions/hooks'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useCallback, useRef, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
@@ -22,7 +22,7 @@ export default function HomeScreen() {
     SharedValue<number> | undefined
   >(undefined)
   const [driveModeEnabled, setDriveModeEnabled] = useState(false)
-  const setIsTripActive = useDirectionsStore((s) => s.setIsTripActive)
+  const { setIsTripActive } = useDirectionsActions()
 
   const handleStartTrip = useCallback(() => {
     setIsTripActive(true)

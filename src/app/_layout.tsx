@@ -21,6 +21,7 @@ import {
   ThemeProvider as NavigationThemeProvider,
 } from '@react-navigation/native'
 import { QueryClientProvider } from '@tanstack/react-query'
+import { useTanStackQueryDevTools } from '@rozenite/tanstack-query-plugin'
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
@@ -29,6 +30,7 @@ import { useEffect } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -41,10 +43,12 @@ export default function RootLayout() {
     Nunito_900Black,
   })
 
+  useTanStackQueryDevTools(queryClient)
+
   if (!fontsLoaded) {
     return null
   }
-
+ 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
@@ -62,6 +66,7 @@ export default function RootLayout() {
 
 function AppContent() {
   const { resolvedTheme } = useTheme()
+ 
 
   // Initialize Mapbox for Android
   useEffect(() => {

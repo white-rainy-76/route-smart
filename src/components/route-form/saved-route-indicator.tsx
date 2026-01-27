@@ -1,15 +1,18 @@
 import { Typography } from '@/shared/ui/typography'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
+import {
+  useDirectionsActions,
+  useDirectionsSavedRouteId,
+} from '@/stores/directions/hooks'
 import { MaterialIcons } from '@expo/vector-icons'
 import { TouchableOpacity, View } from 'react-native'
 
 export function SavedRouteIndicator() {
   const { t } = useTranslation()
   const { resolvedTheme } = useTheme()
-  const savedRouteId = useDirectionsStore((s) => s.savedRouteId)
-  const setSavedRouteId = useDirectionsStore((s) => s.setSavedRouteId)
+  const savedRouteId = useDirectionsSavedRouteId()
+  const { setSavedRouteId } = useDirectionsActions()
 
   if (!savedRouteId) return null
 

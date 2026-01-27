@@ -5,8 +5,9 @@ import {
 } from '@/services/route/get-saved-route'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
-import { RoutePoint, useRouteStore } from '@/shared/stores/route-store'
+import { useDirectionsActions } from '@/stores/directions/hooks'
+import { useRouteActions } from '@/stores/route/hooks'
+import type { RoutePoint } from '@/stores/route/types'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useQuery } from '@tanstack/react-query'
 import { router } from 'expo-router'
@@ -34,11 +35,8 @@ export default function SavedRoutesScreen() {
   const placeholderColor = resolvedTheme === 'dark' ? '#64748B' : '#94A3B8'
 
   // Stores
-  const setOrigin = useRouteStore((s) => s.setOrigin)
-  const setDestination = useRouteStore((s) => s.setDestination)
-  const setWaypoints = useRouteStore((s) => s.setWaypoints)
-  const setSavedRouteId = useDirectionsStore((s) => s.setSavedRouteId)
-  const clearDirections = useDirectionsStore((s) => s.clearDirections)
+  const { setOrigin, setDestination, setWaypoints } = useRouteActions()
+  const { setSavedRouteId, clearDirections } = useDirectionsActions()
 
   // Получить список сохранённых маршрутов
   const {

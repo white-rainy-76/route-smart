@@ -1,14 +1,13 @@
+import { pointsEqual } from '@/components/route-form/route-form.validation'
 import {
   LocationItem,
   LocationPickerEmpty,
   LocationPickerHeader,
   LocationPickerHistoryLabel,
   LocationPickerItem,
-  LocationPickerMapModal,
+  LocationPickerMapPanel,
   LocationPickerSearch,
-} from '@/components/location-picker'
-import { pointsEqual } from '@/components/route-form/route-form.validation'
-import { ShowOnMapButton } from '@/shared/ui/show-on-map-button'
+} from '@/features/location-picker'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import {
@@ -19,8 +18,14 @@ import {
   loadLocationPickerHistory,
   saveLocationPickerHistoryItem,
 } from '@/shared/lib/location-picker/history'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
-import { RoutePoint, useRouteStore } from '@/shared/stores/route-store'
+import { useDirectionsActions } from '@/stores/directions/hooks'
+import {
+  useRouteActions,
+  useRouteDestination,
+  useRouteOrigin,
+  useRouteWaypoints,
+} from '@/stores/route/hooks'
+import type { RoutePoint } from '@/stores/route/types'
 import { useFocusEffect } from '@react-navigation/native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -44,21 +49,17 @@ export default function LocationPickerScreen() {
   const { resolvedTheme } = useTheme()
   // IMPORTANT: keep zustand selectors stable (avoid returning new objects) to prevent
   // "getSnapshot should be cached" / maximum update depth issues.
-  const origin = useRouteStore((s) => s.origin)
-  const destination = useRouteStore((s) => s.destination)
-  const waypoints = useRouteStore((s) => s.waypoints)
-  const setOrigin = useRouteStore((s) => s.setOrigin)
-  const setDestination = useRouteStore((s) => s.setDestination)
-  const setWaypoints = useRouteStore((s) => s.setWaypoints)
-  const addWaypoint = useRouteStore((s) => s.addWaypoint)
+  const origin = useRouteOrigin()
+  const destination = useRouteDestination()
+  const waypoints = useRouteWaypoints()
+  const { setOrigin, setDestination, setWaypoints, addWaypoint } = useRouteActions()
+  const { setSavedRouteId } = useDirectionsActions()
 
   const [searchQuery, setSearchQuery] = useState('')
   const [isAutocompleteLoading, setIsAutocompleteLoading] = useState(false)
   const [autocompleteRefresh, setAutocompleteRefresh] = useState(0)
   const [history, setHistory] = useState<LocationItem[]>([])
   const [results, setResults] = useState<LocationItem[]>([])
-  const [isMapVisible, setIsMapVisible] = useState(false)
-  const [isCommitting, setIsCommitting] = useState(false)
   const [keyboardOffset, setKeyboardOffset] = useState(0)
 
   const isMountedRef = useRef(true)
@@ -103,8 +104,7 @@ export default function LocationPickerScreen() {
       setResults([])
       const shouldAutoSearch = nextQuery.trim().length >= 2
       setIsAutocompleteLoading(shouldAutoSearch)
-      setIsMapVisible(false)
-      setIsCommitting(false)
+      // map panel resets its own visibility
       if (shouldAutoSearch) setAutocompleteRefresh((v) => v + 1)
 
       return undefined
@@ -242,7 +242,7 @@ export default function LocationPickerScreen() {
       if (isMountedRef.current) setHistory(nextHistory)
 
       // Очищаем savedRouteId при ручном изменении точек через location-picker
-      useDirectionsStore.getState().setSavedRouteId(null)
+      setSavedRouteId(null)
 
       switch (type) {
         case 'origin':
@@ -294,78 +294,6 @@ export default function LocationPickerScreen() {
     if (type === 'destination') setDestination(null)
   }
 
-  const openMap = () => {
-    // Map picker does not require a draft point.
-    setIsMapVisible(true)
-  }
-
-  const handleDone = async (point: LocationItem) => {
-    if (isCommitting) return
-    if (
-      !Number.isFinite(point.latitude) ||
-      !Number.isFinite(point.longitude) ||
-      point.latitude === 0 ||
-      point.longitude === 0
-    )
-      return
-
-    setIsCommitting(true)
-    try {
-      // Проверка на совпадение с уже выбранными точками
-      const allPoints: RoutePoint[] = []
-      if (origin) allPoints.push(origin)
-      if (destination) allPoints.push(destination)
-      allPoints.push(...waypoints)
-
-      const duplicatePoint = allPoints.find((p) => pointsEqual(point, p))
-
-      if (duplicatePoint) {
-        Alert.alert(
-          'Location already selected',
-          'This location is already selected as origin, destination, or waypoint',
-        )
-        setIsMapVisible(false)
-        return
-      }
-
-      const nextHistory = await saveLocationPickerHistoryItem(point)
-      if (isMountedRef.current) setHistory(nextHistory)
-
-      // Очищаем savedRouteId при ручном изменении точек через map picker
-      useDirectionsStore.getState().setSavedRouteId(null)
-
-      switch (type) {
-        case 'origin':
-          setOrigin(point)
-          break
-        case 'destination':
-          setDestination(point)
-          break
-        case 'waypoint':
-          addWaypoint(point)
-          break
-        default:
-          break
-      }
-
-      router.back()
-    } finally {
-      if (isMountedRef.current) setIsCommitting(false)
-    }
-  }
-
-  const initialMapRegion = useMemo(() => {
-    const existing = type === 'origin' ? origin : type === 'destination' ? destination : null
-    const latitude = existing?.latitude ?? 39.8283
-    const longitude = existing?.longitude ?? -98.5795
-    return {
-      latitude,
-      longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    }
-  }, [type, origin, destination])
-
   const backgroundColor = resolvedTheme === 'dark' ? '#0F172A' : '#FFFFFF'
 
   return (
@@ -409,18 +337,13 @@ export default function LocationPickerScreen() {
         }
       />
 
-      <View
-        className="absolute left-0 right-0"
-        style={{ bottom: keyboardOffset }}>
-        <ShowOnMapButton onPress={openMap} />
-      </View>
-
-      <LocationPickerMapModal
-        visible={isMapVisible}
-        language={currentLanguage}
-        initialRegion={initialMapRegion}
-        onClose={() => setIsMapVisible(false)}
-        onDone={handleDone}
+      <LocationPickerMapPanel
+        type={type}
+        currentLanguage={currentLanguage}
+        keyboardOffset={keyboardOffset}
+        onHistoryUpdate={(items) => {
+          if (isMountedRef.current) setHistory(items)
+        }}
       />
     </View>
   )

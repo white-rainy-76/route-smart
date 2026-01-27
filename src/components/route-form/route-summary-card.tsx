@@ -1,6 +1,10 @@
 import { Typography } from '@/shared/ui/typography'
 import { useTheme } from '@/shared/hooks/use-theme'
-import { useRouteStore } from '@/shared/stores/route-store'
+import {
+  useRouteDestination,
+  useRouteOrigin,
+  useRouteWaypoints,
+} from '@/stores/route/hooks'
 import { MaterialIcons } from '@expo/vector-icons'
 import { Pressable, View } from 'react-native'
 
@@ -10,7 +14,9 @@ interface RouteSummaryCardProps {
 
 export function RouteSummaryCard({ onEdit }: RouteSummaryCardProps) {
   const { resolvedTheme } = useTheme()
-  const { origin, destination, waypoints } = useRouteStore()
+  const origin = useRouteOrigin()
+  const destination = useRouteDestination()
+  const waypoints = useRouteWaypoints()
 
   // Формируем текст маршрута
   const getRouteSummaryText = () => {

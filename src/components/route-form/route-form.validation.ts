@@ -1,4 +1,4 @@
-import { RoutePoint } from '@/shared/stores/route-store'
+import type { RoutePoint } from '@/stores/route/types'
 import { z } from 'zod'
 
 /**

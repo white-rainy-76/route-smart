@@ -2,8 +2,14 @@ import { Button } from '@/shared/ui/button'
 import { Typography } from '@/shared/ui/typography'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
-import { useRouteStore, type RoutePoint } from '@/shared/stores/route-store'
+import { useDirectionsActions } from '@/stores/directions/hooks'
+import {
+  useRouteActions,
+  useRouteDestination,
+  useRouteOrigin,
+  useRouteWaypoints,
+} from '@/stores/route/hooks'
+import type { RoutePoint } from '@/stores/route/types'
 import { MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { Platform, Text, TouchableOpacity, View } from 'react-native'
@@ -32,13 +38,11 @@ export function WaypointsEditor({ onBack }: { onBack: () => void }) {
   const { t } = useTranslation()
   const { resolvedTheme } = useTheme()
 
-  const origin = useRouteStore((s) => s.origin)
-  const destination = useRouteStore((s) => s.destination)
-  const waypoints = useRouteStore((s) => s.waypoints)
-  const setOrigin = useRouteStore((s) => s.setOrigin)
-  const setDestination = useRouteStore((s) => s.setDestination)
-  const setWaypoints = useRouteStore((s) => s.setWaypoints)
-  const setSavedRouteId = useDirectionsStore((s) => s.setSavedRouteId)
+  const origin = useRouteOrigin()
+  const destination = useRouteDestination()
+  const waypoints = useRouteWaypoints()
+  const { setOrigin, setDestination, setWaypoints } = useRouteActions()
+  const { setSavedRouteId } = useDirectionsActions()
 
   const textColor = resolvedTheme === 'dark' ? '#F8FAFC' : '#0F172A'
   const mutedColor = resolvedTheme === 'dark' ? '#94A3B8' : '#64748B'

@@ -1,7 +1,7 @@
 import { Typography } from '@/shared/ui/typography'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
-import { RoutePoint } from '@/shared/stores/route-store'
+import type { RoutePoint } from '@/stores/route/types'
 import { MaterialIcons } from '@expo/vector-icons'
 import { TouchableOpacity, View } from 'react-native'
 
