@@ -72,7 +72,7 @@ export default function SettingsScreen() {
       await setAuthenticated(false)
       router.replace('/(auth)/login')
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       setDeleteAccountModalVisible(false)
       Alert.alert(t('common.error'), t('settings.deleteAccountError'))
       console.error('Delete account error:', error)
@@ -581,7 +581,6 @@ export default function SettingsScreen() {
     </View>
   )
 }
-
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
@@ -608,5 +607,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 })
-
 
