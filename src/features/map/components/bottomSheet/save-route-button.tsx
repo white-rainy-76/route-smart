@@ -2,7 +2,7 @@ import { SavedRoutesIcon } from '@/shared/ui/icons'
 import { useAddSavedRouteMutation } from '@/services/route/add-saved-route'
 import { routeQueries } from '@/services/route/get-saved-route'
 import { useTranslation } from '@/shared/hooks/use-translation'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
+import { useDirectionsSelectedRouteSectionId } from '@/stores/directions/hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Alert, StyleSheet, TouchableOpacity } from 'react-native'
@@ -16,9 +16,7 @@ interface SaveRouteButtonProps {
 export function SaveRouteButton({ onPress, disabled }: SaveRouteButtonProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const selectedRouteSectionId = useDirectionsStore(
-    (s) => s.selectedRouteSectionId,
-  )
+  const selectedRouteSectionId = useDirectionsSelectedRouteSectionId()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const addSavedRouteMutation = useAddSavedRouteMutation({

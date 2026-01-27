@@ -1,17 +1,18 @@
 import { RouteTimeMarker } from '@/features/map/components/marker-content/route-time-marker'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
+import {
+    useDirections,
+    useDirectionsActions,
+    useDirectionsSelectedRouteSectionId,
+    useDirectionsTripActive,
+} from '@/stores/directions/hooks'
 import { useCallback, useMemo } from 'react'
 import { Marker } from 'react-native-maps'
 
 export function RouteTimeMarkers() {
-  const directions = useDirectionsStore((s) => s.directions)
-  const selectedRouteSectionId = useDirectionsStore(
-    (s) => s.selectedRouteSectionId,
-  )
-  const isTripActive = useDirectionsStore((s) => s.isTripActive)
-  const setSelectedRouteSectionId = useDirectionsStore(
-    (s) => s.setSelectedRouteSectionId,
-  )
+  const directions = useDirections()
+  const selectedRouteSectionId = useDirectionsSelectedRouteSectionId()
+  const isTripActive = useDirectionsTripActive()
+  const { setSelectedRouteSectionId } = useDirectionsActions()
 
   // Вычисляем средние точки секций для отображения маркеров с временем
   const sectionCenterPoints = useMemo(() => {

@@ -1,16 +1,20 @@
 /**
  * iOS реализация карты используя react-native-maps
  */
-import { useDirectionsStore } from '@/shared/stores/directions-store'
-import { useRouteStore } from '@/shared/stores/route-store'
 import { MapLoader } from '@/shared/ui'
+import { useDirections, useDirectionsLoading } from '@/stores/directions/hooks'
+import {
+    useRouteDestination,
+    useRouteOrigin,
+    useRouteWaypoints,
+} from '@/stores/route/hooks'
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { StyleSheet, View } from 'react-native'
 import MapView, {
-  Marker,
-  Polyline,
-  PROVIDER_GOOGLE,
-  MapViewProps as RNMapsViewProps,
+    Marker,
+    Polyline,
+    PROVIDER_GOOGLE,
+    MapViewProps as RNMapsViewProps,
 } from 'react-native-maps'
 import type { SharedValue } from 'react-native-reanimated'
 import { MapControls } from '../../components/controls/map-controls'
@@ -26,8 +30,8 @@ import { UserLocationMarker } from './markers/location-marker'
 import { LocationPuckMarker } from './markers/location-puck-marker'
 import { RouteTimeMarkers } from './markers/route-time-markers'
 import {
-  TemporaryLocationMarkerUI,
-  useTemporaryLocationMarker,
+    TemporaryLocationMarkerUI,
+    useTemporaryLocationMarker,
 } from './markers/temporary-location-marker-handler'
 import { TollsMarkers } from './markers/tolls/tolls-markers'
 import { WeighStationsMarkers } from './markers/weigh-stations-markers'
@@ -69,11 +73,11 @@ export const RNMapsMap = memo(function RNMapsMap({
     }
   }, [externalMapRef])
 
-  const origin = useRouteStore((s) => s.origin)
-  const destination = useRouteStore((s) => s.destination)
-  const waypoints = useRouteStore((s) => s.waypoints)
-  const directions = useDirectionsStore((s) => s.directions)
-  const isLoading = useDirectionsStore((s) => s.isLoading)
+  const origin = useRouteOrigin()
+  const destination = useRouteDestination()
+  const waypoints = useRouteWaypoints()
+  const directions = useDirections()
+  const isLoading = useDirectionsLoading()
 
   // Временный маркер при long press
   const {

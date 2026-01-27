@@ -1,7 +1,10 @@
-import { Typography } from '@/shared/ui/typography'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
+import { Typography } from '@/shared/ui/typography'
+import {
+    useDirections,
+    useDirectionsSelectedRouteSectionId,
+} from '@/stores/directions/hooks'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useMemo } from 'react'
 import { View } from 'react-native'
@@ -17,10 +20,8 @@ function formatPricePerGallon(value: number) {
 export function FuelInfoPanel() {
   const { t } = useTranslation()
   const { resolvedTheme } = useTheme()
-  const directions = useDirectionsStore((s) => s.directions)
-  const selectedRouteSectionId = useDirectionsStore(
-    (s) => s.selectedRouteSectionId,
-  )
+  const directions = useDirections()
+  const selectedRouteSectionId = useDirectionsSelectedRouteSectionId()
 
   const selectedSection = useMemo(() => {
     if (!directions?.route || directions.route.length === 0) return null

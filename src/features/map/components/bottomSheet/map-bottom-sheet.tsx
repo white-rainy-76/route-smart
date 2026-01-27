@@ -1,6 +1,13 @@
 import { RouteForm, WaypointsEditor } from '@/components/route-form'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
-import { useRouteStore } from '@/shared/stores/route-store'
+import {
+  useDirectionsSavedRouteId,
+  useDirectionsTripActive,
+} from '@/stores/directions/hooks'
+import {
+  useRouteDestination,
+  useRouteOrigin,
+  useRouteWaypointsCount,
+} from '@/stores/route/hooks'
 import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
@@ -106,8 +113,8 @@ export function MapBottomSheet({
   const bottomSheetRef = useRef<BottomSheet>(null)
   const [mode, setMode] = useState<'form' | 'waypoints'>('form')
   const insets = useSafeAreaInsets()
-  const savedRouteId = useDirectionsStore((s) => s.savedRouteId)
-  const isTripActive = useDirectionsStore((s) => s.isTripActive)
+  const savedRouteId = useDirectionsSavedRouteId()
+  const isTripActive = useDirectionsTripActive()
   console.log('BottomSHeet' )
   // Если используется сохранённый маршрут, увеличиваем начальную высоту до 40%
   // Добавляем очень маленький snap point (8%) только в режиме поездки
@@ -120,9 +127,9 @@ export function MapBottomSheet({
       return savedRouteId ? ['40%', '88.1%'] : ['35%', '88.1%']
     }
   }, [savedRouteId, isTripActive])
-  const origin = useRouteStore((s) => s.origin)
-  const destination = useRouteStore((s) => s.destination)
-  const waypointsCount = useRouteStore((s) => s.waypoints.length)
+  const origin = useRouteOrigin()
+  const destination = useRouteDestination()
+  const waypointsCount = useRouteWaypointsCount()
   const totalStopsCount =
     (origin ? 1 : 0) + waypointsCount + (destination ? 1 : 0)
 

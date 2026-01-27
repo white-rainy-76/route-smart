@@ -1,6 +1,10 @@
-import { Button } from '@/shared/ui/button'
 import { useTranslation } from '@/shared/hooks/use-translation'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
+import { Button } from '@/shared/ui/button'
+import {
+    useDirections,
+    useDirectionsSelectedRouteSectionId,
+    useDirectionsTripActive,
+} from '@/stores/directions/hooks'
 import { useMemo } from 'react'
 import { Linking, View } from 'react-native'
 
@@ -14,11 +18,9 @@ export function FuelInfoButtons({
   onEndTrip,
 }: FuelInfoButtonsProps) {
   const { t } = useTranslation()
-  const directions = useDirectionsStore((s) => s.directions)
-  const selectedRouteSectionId = useDirectionsStore(
-    (s) => s.selectedRouteSectionId,
-  )
-  const isTripActive = useDirectionsStore((s) => s.isTripActive)
+  const directions = useDirections()
+  const selectedRouteSectionId = useDirectionsSelectedRouteSectionId()
+  const isTripActive = useDirectionsTripActive()
 
   const selectedSection = useMemo(() => {
     if (!directions?.route || directions.route.length === 0) return null

@@ -1,14 +1,12 @@
 import { TollMarker } from '@/features/map/components/marker-content/tolls/toll-marker'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
-import { useTollsStore } from '@/shared/stores/tolls-store'
+import { useDirectionsSelectedRouteSectionId } from '@/stores/directions/hooks'
+import { useTolls } from '@/stores/tolls/hooks'
 import { useMemo } from 'react'
 import { Marker } from 'react-native-maps'
 
 export function TollsMarkers() {
-  const tolls = useTollsStore((s) => s.tolls)
-  const selectedRouteSectionId = useDirectionsStore(
-    (s) => s.selectedRouteSectionId,
-  )
+  const tolls = useTolls()
+  const selectedRouteSectionId = useDirectionsSelectedRouteSectionId()
 
   // Фильтруем толлы по выбранной секции
   const filteredTolls = useMemo(() => {

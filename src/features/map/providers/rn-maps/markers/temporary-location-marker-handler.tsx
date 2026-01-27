@@ -1,7 +1,7 @@
 import { TemporaryLocationMarker } from '@/features/map/components/marker-content/temporary-location-marker'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import { googleReverseGeocode } from '@/shared/lib/google-places/google-places'
-import { useRouteStore } from '@/shared/stores/route-store'
+import { useRouteStore } from '@/stores/route/routeStore'
 import { useCallback, useState } from 'react'
 import type { LongPressEvent } from 'react-native-maps'
 import { Marker } from 'react-native-maps'
@@ -68,15 +68,15 @@ export function useTemporaryLocationMarker() {
 
     // Если нет origin - добавляем как origin
     if (!store.origin) {
-      store.setOrigin(routePoint)
+      store.actions.setOrigin(routePoint)
     }
     // Если есть origin, но нет destination - добавляем как destination
     else if (!store.destination) {
-      store.setDestination(routePoint)
+      store.actions.setDestination(routePoint)
     }
     // Если есть и origin, и destination - добавляем как waypoint
     else {
-      store.addWaypoint(routePoint)
+      store.actions.addWaypoint(routePoint)
     }
 
     setTemporaryMarker(null)

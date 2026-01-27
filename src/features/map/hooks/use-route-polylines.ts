@@ -1,4 +1,8 @@
-import { useDirectionsStore } from '@/shared/stores/directions-store'
+import {
+    useDirections,
+    useDirectionsSelectedRouteSectionId,
+    useDirectionsTripActive,
+} from '@/stores/directions/hooks'
 import { useMemo } from 'react'
 import type { MapCoordinate } from '../types/map-types'
 
@@ -9,9 +13,9 @@ export interface RoutePolylineSection {
 }
 
 export const useRoutePolylines = (): RoutePolylineSection[] => {
-  const directions = useDirectionsStore((s) => s.directions)
-  const selectedRouteSectionId = useDirectionsStore((s) => s.selectedRouteSectionId)
-  const isTripActive = useDirectionsStore((s) => s.isTripActive)
+  const directions = useDirections()
+  const selectedRouteSectionId = useDirectionsSelectedRouteSectionId()
+  const isTripActive = useDirectionsTripActive()
 
   return useMemo(() => {
     const sections = directions?.route ?? []

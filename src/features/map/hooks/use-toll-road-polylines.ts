@@ -1,4 +1,4 @@
-import { useTollRoadsStore } from '@/shared/stores/toll-roads-store'
+import { useTollRoads } from '@/stores/toll-roads/hooks'
 import { useMemo } from 'react'
 import type { MapCoordinate } from '../types/map-types'
 
@@ -8,7 +8,7 @@ export interface TollRoadPolyline {
 }
 
 export const useTollRoadPolylines = (): TollRoadPolyline[] => {
-  const tollRoads = useTollRoadsStore((s) => s.tollRoads)
+  const tollRoads = useTollRoads()
 
   return useMemo(() => {
     if (!tollRoads || tollRoads.length === 0) return []

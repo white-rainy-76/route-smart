@@ -1,14 +1,17 @@
-import { Typography } from '@/shared/ui/typography'
 import {
-  AxelType,
-  TollPaymentType,
-  TollPriceTimeOfDay,
+    AxelType,
+    TollPaymentType,
+    TollPriceTimeOfDay,
 } from '@/services/tolls/get-tolls-along-polyline-sections'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import { formatDriveTime } from '@/shared/lib/format-drive-time'
-import { useDirectionsStore } from '@/shared/stores/directions-store'
-import { useTollsStore } from '@/shared/stores/tolls-store'
+import { Typography } from '@/shared/ui/typography'
+import {
+    useDirections,
+    useDirectionsSelectedRouteSectionId,
+} from '@/stores/directions/hooks'
+import { useTolls } from '@/stores/tolls/hooks'
 import { useMemo, useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
@@ -140,11 +143,9 @@ export function getAvailablePaymentTypesForAxles(
 export function TollsPanel() {
   const { t } = useTranslation()
   const { resolvedTheme } = useTheme()
-  const directions = useDirectionsStore((s) => s.directions)
-  const selectedRouteSectionId = useDirectionsStore(
-    (s) => s.selectedRouteSectionId,
-  )
-  const tolls = useTollsStore((s) => s.tolls)
+  const directions = useDirections()
+  const selectedRouteSectionId = useDirectionsSelectedRouteSectionId()
+  const tolls = useTolls()
 
   const [selectedAxles, setSelectedAxles] = useState<5 | 6>(5)
   // null => will fall back to first available payment type (if any)
