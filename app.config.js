@@ -16,7 +16,7 @@ const getPlugins = () => {
       'expo-location',
       {
         locationAlwaysAndWhenInUsePermission:
-          'Allow 4uscorp to use your location.',
+          'Road Smart uses your location to calculate routes from your current position to your destination, display your location on the map, and provide real-time navigation guidance. For example, when you search for a route, we use your current location to calculate the best route from your position to your destination and show your location on the map as you travel.',
       },
     ],
     'react-native-iap',
