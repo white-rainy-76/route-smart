@@ -5,9 +5,11 @@ import {
   signInPayloadSchema,
   signUpPayloadSchema,
 } from '../payload/auth.payload'
+import { deleteUserPayloadSchema } from '../payload/delete-user.payload'
 import { refreshTokenPayloadSchema } from '../payload/refresh-token.payload'
 
 export type SignInPayload = z.infer<typeof signInPayloadSchema>
 export type SignUpPayload = z.infer<typeof signUpPayloadSchema>
 export type RefreshTokenPayload = z.infer<typeof refreshTokenPayloadSchema>
 export type AppleSignInPayload = z.infer<typeof appleSignInPayloadSchema>
+export type DeleteUserPayload = z.infer<typeof deleteUserPayloadSchema>

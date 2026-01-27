@@ -179,7 +179,14 @@
     "locationGranted": "Location access granted",
     "locationDenied": "Location access denied",
     "requestLocation": "Request location access",
-    "openDeviceSettings": "Open device settings"
+    "openDeviceSettings": "Open device settings",
+    "account": "Account",
+    "deleteAccount": "Delete account",
+    "deleteAccountDescription": "Permanently delete your account and all associated data. This action cannot be undone.",
+    "deleteAccountConfirmTitle": "Delete account?",
+    "deleteAccountConfirmMessage": "Are you sure you want to delete your account? All your data will be permanently removed. This action cannot be undone.",
+    "deleteAccountButton": "Delete account",
+    "deleteAccountError": "Failed to delete account. Please try again."
   },
   "fuelInfo": {
     "title": "Fuel Info",
