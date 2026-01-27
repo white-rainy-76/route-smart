@@ -1,22 +1,28 @@
 import { Button } from '@/components/ui/button'
 import { Typography } from '@/components/ui/typography'
 import { RTL_LANGUAGES } from '@/i18n/config'
+import { useApp } from '@/shared/contexts/app-context'
 import { useLocation } from '@/shared/hooks/use-location'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
+import { clearAllTokens } from '@/shared/lib/auth'
 import { startLocationTracking, stopLocationTracking } from '@/shared/location'
 import { MaterialIcons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
+  ActivityIndicator,
   Alert,
   AppState,
   I18nManager,
   Linking,
+  Modal,
   Pressable,
   ScrollView,
+  StyleSheet,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native'
 import RNRestart from 'react-native-restart'
@@ -53,7 +59,44 @@ export default function SettingsScreen() {
   const { permissionStatus, requestPermission, checkPermissionStatus } =
     useLocation()
   const { currentLanguage, changeLanguage } = useTranslation()
+  const { setAuthenticated } = useApp()
   const appState = useRef(AppState.currentState)
+  const [deleteAccountModalVisible, setDeleteAccountModalVisible] =
+    useState(false)
+
+  const deleteUserMutation = useDeleteUserMutation({
+    onSuccess: async () => {
+      setDeleteAccountModalVisible(false)
+      await clearAllTokens()
+      await setAuthenticated(false)
+      router.replace('/(auth)/login')
+    },
+    onError: (error: unknown) => {
+      setDeleteAccountModalVisible(false)
+      Alert.alert(t('common.error'), t('settings.deleteAccountError'))
+      console.error('Delete account error:', error)
+    },
+  })
+
+  const handleDeleteAccountPress = useCallback(() => {
+    setDeleteAccountModalVisible(true)
+  }, [])
+
+  const handleConfirmDeleteAccount = useCallback(async () => {
+    const userId = await getUserId()
+    if (!userId) {
+      Alert.alert(t('common.error'), t('settings.deleteAccountError'))
+      setDeleteAccountModalVisible(false)
+      return
+    }
+    deleteUserMutation.mutate({ userId })
+  }, [deleteUserMutation, t])
+
+  const handleCloseDeleteAccountModal = useCallback(() => {
+    if (!deleteUserMutation.isPending) {
+      setDeleteAccountModalVisible(false)
+    }
+  }, [deleteUserMutation.isPending])
 
   // Проверяем статус разрешений при возврате приложения из настроек
   useEffect(() => {
@@ -98,6 +141,10 @@ export default function SettingsScreen() {
   const sectionHeaderColor = resolvedTheme === 'dark' ? '#CBD5E1' : '#475569'
   const activeBg = resolvedTheme === 'dark' ? '#1E3A8A' : '#EFF6FF'
   const iconBg = resolvedTheme === 'dark' ? '#334155' : '#F1F5F9'
+  const dangerColor = '#DC2626'
+  const modalBg = resolvedTheme === 'dark' ? '#1E293B' : '#FFFFFF'
+  const overlayBg =
+    resolvedTheme === 'dark' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.5)'
 
   const handleRequestLocation = async () => {
     const granted = await requestPermission()
@@ -397,9 +444,165 @@ export default function SettingsScreen() {
             )}
           </View>
         </SettingCard>
+
+        {/* Delete account Section */}
+        <SectionHeader title={t('settings.account')} />
+        <SettingCard>
+          <View className="px-5 py-4">
+            <View className="flex-row items-center mb-3">
+              <View
+                className="w-10 h-10 rounded-xl items-center justify-center mr-4"
+                style={{
+                  backgroundColor: `${dangerColor}18`,
+                }}>
+                <MaterialIcons
+                  name="delete-forever"
+                  size={22}
+                  color={dangerColor}
+                />
+              </View>
+              <View className="flex-1">
+                <Typography
+                  variant="body"
+                  weight="600"
+                  style={{ color: textColor, fontSize: 16, marginBottom: 2 }}>
+                  {t('settings.deleteAccount')}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  style={{ color: mutedColor, fontSize: 13 }}>
+                  {t('settings.deleteAccountDescription')}
+                </Typography>
+              </View>
+            </View>
+            <Button
+              variant="outline"
+              size="sm"
+              onPress={handleDeleteAccountPress}
+              disabled={deleteUserMutation.isPending}
+              style={{
+                width: '100%',
+                marginTop: 4,
+                borderColor: dangerColor,
+              }}
+              textClassName="text-foreground">
+              {t('settings.deleteAccountButton')}
+            </Button>
+          </View>
+        </SettingCard>
       </ScrollView>
+
+      {/* Delete account confirmation modal */}
+      <Modal
+        visible={deleteAccountModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCloseDeleteAccountModal}>
+        <TouchableWithoutFeedback onPress={handleCloseDeleteAccountModal}>
+          <View style={[styles.modalOverlay, { backgroundColor: overlayBg }]}>
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <View
+                style={[
+                  styles.modalCard,
+                  {
+                    backgroundColor: modalBg,
+                  },
+                ]}>
+                <View
+                  className="w-14 h-14 rounded-full items-center justify-center mb-4 mx-auto"
+                  style={{ backgroundColor: `${dangerColor}18` }}>
+                <MaterialIcons
+                  name="warning"
+                  size={28}
+                  color={dangerColor}
+                />
+                </View>
+                <Typography
+                  variant="h3"
+                  weight="700"
+                  align="center"
+                  style={{ color: textColor, marginBottom: 8 }}>
+                  {t('settings.deleteAccountConfirmTitle')}
+                </Typography>
+                <Typography
+                  variant="body"
+                  align="center"
+                  style={{
+                    color: mutedColor,
+                    fontSize: 15,
+                    lineHeight: 22,
+                    marginBottom: 24,
+                  }}>
+                  {t('settings.deleteAccountConfirmMessage')}
+                </Typography>
+                <View className="flex-row gap-3">
+                  <View className="flex-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onPress={handleCloseDeleteAccountModal}
+                      disabled={deleteUserMutation.isPending}
+                      style={{ width: '100%' }}
+                      textClassName="text-foreground">
+                      {t('common.cancel')}
+                    </Button>
+                  </View>
+                  <View className="flex-1">
+                    <Pressable
+                      onPress={handleConfirmDeleteAccount}
+                      disabled={deleteUserMutation.isPending}
+                      style={[
+                        styles.deleteButton,
+                        {
+                          opacity: deleteUserMutation.isPending ? 0.5 : 1,
+                          backgroundColor: dangerColor,
+                        },
+                      ]}>
+                      {deleteUserMutation.isPending ? (
+                        <ActivityIndicator size="small" color="#FFFFFF" />
+                      ) : (
+                        <Typography
+                          variant="body"
+                          weight="700"
+                          align="center"
+                          style={{ color: '#FFFFFF', fontSize: 14 }}>
+                          {t('settings.deleteAccountButton')}
+                        </Typography>
+                      )}
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   )
 }
-
-
+const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalCard: {
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  deleteButton: {
+    height: 36,
+    paddingHorizontal: 16,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})
