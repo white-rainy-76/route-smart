@@ -7,11 +7,13 @@ import { Typography } from '@/shared/ui/typography'
 import { useLogoutMutation } from '@/services/auth'
 import { useApp } from '@/shared/contexts/app-context'
 import { useDrawer } from '@/shared/contexts/drawer-context'
+import { getUserId } from '@/shared/lib/auth'
 import { useTheme } from '@/shared/hooks/use-theme'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import { MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import type { ReactElement } from 'react'
+import { useEffect, useState } from 'react'
 import { Alert, Pressable, ScrollView, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
@@ -28,9 +30,11 @@ export function DrawerContent() {
   const { setAuthenticated } = useApp()
   const { closeDrawer } = useDrawer()
   const insets = useSafeAreaInsets()
+  const [userId, setUserId] = useState<string | null>(null)
 
-  // Фейковый email
-  const userEmail = 'user@example.com'
+  useEffect(() => {
+    getUserId().then(setUserId)
+  }, [])
 
   // Theme colors
   const textColor = resolvedTheme === 'dark' ? '#F8FAFC' : '#111827'
@@ -136,8 +140,9 @@ export function DrawerContent() {
               </Typography>
               <Typography
                 variant="caption"
-                style={{ color: mutedColor, fontSize: 13 }}>
-                {userEmail}
+                style={{ color: mutedColor, fontSize: 13 }}
+                numberOfLines={1}>
+                {userId ?? '—'}
               </Typography>
             </View>
           </View>

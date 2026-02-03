@@ -252,12 +252,17 @@
     "thenPerMonth": "Затем {{price}}/мес. Отмена в любое время.",
     "alreadySubscribedRestore": "Уже подписаны? Восстановить покупки",
     "errorNoSubscription": "Активная подписка не найдена.",
+    "reassignTitle": "Перенести подписку",
+    "reassignMessage": "К вашему Apple ID привязана активная подписка. Перенести её на этот аккаунт?",
+    "reassignConfirm": "Перенести",
     "errorPurchaseFailed": "Ошибка покупки.",
     "errorRestoreFailed": "Не удалось восстановить подписку.",
     "errorStoreConnection": "Ошибка подключения к магазину.",
     "errorInitStore": "Не удалось инициализировать подключение к магазину.",
     "errorStartPurchase": "Не удалось запустить процесс покупки.",
-    "errorFinalization": "Покупка выполнена, но завершение не удалось."
+    "errorFinalization": "Покупка выполнена, но завершение не удалось.",
+    "termsOfUse": "Условия использования",
+    "privacyPolicy": "Политика конфиденциальности"
   },
   "subscription": {
     "title": "Моя подписка",

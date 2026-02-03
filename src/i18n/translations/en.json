@@ -252,12 +252,17 @@
     "thenPerMonth": "Then {{price}}/month. Cancel anytime.",
     "alreadySubscribedRestore": "Already subscribed? Restore purchases",
     "errorNoSubscription": "No active subscription found.",
+    "reassignTitle": "Transfer subscription",
+    "reassignMessage": "An active subscription is linked to your Apple ID. Transfer it to this account?",
+    "reassignConfirm": "Transfer",
     "errorPurchaseFailed": "Purchase failed.",
     "errorRestoreFailed": "Could not restore subscription.",
     "errorStoreConnection": "Store connection failed.",
     "errorInitStore": "Failed to initialize store connection.",
     "errorStartPurchase": "Failed to start purchase flow.",
-    "errorFinalization": "Purchase completed but finalization failed."
+    "errorFinalization": "Purchase completed but finalization failed.",
+    "termsOfUse": "Terms of Use",
+    "privacyPolicy": "Privacy Policy"
   },
   "subscription": {
     "title": "My subscription",
