@@ -85,3 +85,38 @@ The app now sends `appAccountToken` (UUID) with every purchase request to strong
 
 - Token generation: `src/shared/lib/iap/app-account-token.ts`
 - Uses `expo-crypto` SHA-256 to create deterministic UUID from `roadsmart:{userId}`
+
+---
+
+## Restore purchases (link subscription to current user)
+
+When a user buys a subscription on **Account A**, then logs into **Account B** (same Apple ID), the backend has no entitlement for Account B. The app uses "Restore Purchases" to fix this.
+
+### Flow
+
+1. User (Account B) taps **Restore Purchases**.
+2. App calls Apple (`restorePurchases()` + `getAvailablePurchases()`), gets active subscription(s) for this Apple ID.
+3. App sends **POST** to backend with receipt data and the **current user** (from auth) so backend can link the subscription to Account B.
+
+### Endpoint
+
+- **POST** `payment-api/api/billing/subscription/restore`
+- Body (JSON):
+
+```json
+{
+  "productId": "us.roadsmart.app.sub.monthly",
+  "transactionJws": "<JWS from purchase.purchaseToken>",
+  "originalTransactionId": "<originalTransactionIdentifierIOS>",
+  "transactionId": "<optional, for idempotency>"
+}
+```
+
+- **Auth**: same as other API (Bearer / session); backend derives **userId** from the current request and stores entitlement for that user.
+- **Response**: 200 OK (or return updated entitlement if you prefer).
+
+### Backend responsibilities
+
+- Validate `transactionJws` with Apple (App Store Server API or JWS verification).
+- Persist entitlement for the **current authenticated user** (Account B): active, expiry, `originalTransactionId`.
+- Optionally use App Store Server Notifications v2 to keep entitlement up to date.
