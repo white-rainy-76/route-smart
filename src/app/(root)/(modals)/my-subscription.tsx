@@ -94,14 +94,17 @@ export default function MySubscriptionScreen() {
     const diff = date.getTime() - Date.now()
     if (Number.isNaN(date.getTime())) return '—'
     if (diff <= 0) return 'Expired'
-    const totalHours = Math.floor(diff / (1000 * 60 * 60))
-    const days = Math.floor(totalHours / 24)
-    const hours = totalHours % 24
-    if (days > 0) {
-      return `${days}d ${hours}h`
-    }
-    const minutes = Math.floor((diff / (1000 * 60)) % 60)
-    return `${hours}h ${minutes}m`
+    const totalSeconds = Math.floor(diff / 1000)
+    const days = Math.floor(totalSeconds / (24 * 60 * 60))
+    const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60))
+    const minutes = Math.floor((totalSeconds % (60 * 60)) / 60)
+    const seconds = totalSeconds % 60
+    const parts: string[] = []
+    if (days > 0) parts.push(`${days}d`)
+    if (hours > 0 || parts.length > 0) parts.push(`${hours}h`)
+    if (minutes > 0 || parts.length > 0) parts.push(`${minutes}m`)
+    parts.push(`${seconds}s`)
+    return parts.join(' ')
   }
 
   const InfoRow = ({ label, value }: { label: string; value: string }) => (
