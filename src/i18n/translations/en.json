@@ -179,7 +179,14 @@
     "locationGranted": "Location access granted",
     "locationDenied": "Location access denied",
     "requestLocation": "Request location access",
-    "openDeviceSettings": "Open device settings"
+    "openDeviceSettings": "Open device settings",
+    "account": "Account",
+    "deleteAccount": "Delete account",
+    "deleteAccountDescription": "Permanently delete your account and all associated data. This action cannot be undone.",
+    "deleteAccountConfirmTitle": "Delete account?",
+    "deleteAccountConfirmMessage": "Are you sure you want to delete your account? All your data will be permanently removed. This action cannot be undone.",
+    "deleteAccountButton": "Delete account",
+    "deleteAccountError": "Failed to delete account. Please try again."
   },
   "fuelInfo": {
     "title": "Fuel Info",
@@ -245,12 +252,17 @@
     "thenPerMonth": "Then {{price}}/month. Cancel anytime.",
     "alreadySubscribedRestore": "Already subscribed? Restore purchases",
     "errorNoSubscription": "No active subscription found.",
+    "reassignTitle": "Transfer subscription",
+    "reassignMessage": "An active subscription is linked to your Apple ID. Transfer it to this account?",
+    "reassignConfirm": "Transfer",
     "errorPurchaseFailed": "Purchase failed.",
     "errorRestoreFailed": "Could not restore subscription.",
     "errorStoreConnection": "Store connection failed.",
     "errorInitStore": "Failed to initialize store connection.",
     "errorStartPurchase": "Failed to start purchase flow.",
-    "errorFinalization": "Purchase completed but finalization failed."
+    "errorFinalization": "Purchase completed but finalization failed.",
+    "termsOfUse": "Terms of Use",
+    "privacyPolicy": "Privacy Policy"
   },
   "subscription": {
     "title": "My subscription",

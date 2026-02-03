@@ -10,10 +10,12 @@ import {
   signInPayloadSchema,
   signUpPayloadSchema,
 } from './payload/auth.payload'
+import { deleteUserPayloadSchema } from './payload/delete-user.payload'
 import { refreshTokenPayloadSchema } from './payload/refresh-token.payload'
 import { AuthResponse, RefreshTokenResponse } from './types/auth'
 import {
   AppleSignInPayload,
+  DeleteUserPayload,
   RefreshTokenPayload,
   SignInPayload,
   SignUpPayload,
@@ -73,4 +75,13 @@ export const appleSignIn = async (
 export const logout = async (signal?: AbortSignal): Promise<void> => {
   const config: AxiosRequestConfig = { signal }
   await api.post(`/auth-api/Auth/logout-mobile`, {}, config)
+}
+
+export const deleteUser = async (
+  payload: DeleteUserPayload,
+  signal?: AbortSignal,
+): Promise<void> => {
+  const validatedPayload = deleteUserPayloadSchema.parse(payload)
+  const config: AxiosRequestConfig = { signal }
+  await api.delete(`/auth-api/User/${validatedPayload.userId}`, config)
 }
