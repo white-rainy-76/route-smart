@@ -23,7 +23,7 @@ export default function LocationPermissionScreen() {
   const nextRoute =
     Platform.OS === 'ios' && !hasActiveSubscription ? '/subscription' : '/home'
 
-  const handleAllowAccess = async () => {
+  const handleContinue = async () => {
     const granted = await requestPermission()
     if (granted) {
       router.replace(nextRoute)
@@ -31,10 +31,6 @@ export default function LocationPermissionScreen() {
       // Even if permission was denied, user has seen the screen
       router.replace(nextRoute)
     }
-  }
-
-  const handleLater = () => {
-    router.replace(nextRoute)
   }
 
   return (
@@ -55,10 +51,7 @@ export default function LocationPermissionScreen() {
         <View
           className="items-center"
           style={{ paddingHorizontal: 48, marginTop: 54 }}>
-          <Typography
-            variant="h1"
-            align="center"
-            className="text-foreground">
+          <Typography variant="h1" align="center" className="text-foreground">
             {t('locationPermission.title')}
           </Typography>
 
@@ -73,25 +66,16 @@ export default function LocationPermissionScreen() {
           </View>
         </View>
 
-        {/* Buttons */}
+        {/* Buttons - single "Continue" to show system permission (Guideline 5.1.1) */}
         <View style={{ paddingHorizontal: 55, paddingBottom: 28 }}>
-          <View className="gap-4">
-            <Button
-              onPress={handleAllowAccess}
-              variant="primary"
-              className="mx-auto"
-              size="md"
-              disabled={isLoading || permissionStatus?.granted}>
-              {t('locationPermission.allowAccess')}
-            </Button>
-            <Button
-              onPress={handleLater}
-              className="mx-auto"
-              variant="outline"
-              size="md">
-              {t('locationPermission.later')}
-            </Button>
-          </View>
+          <Button
+            onPress={handleContinue}
+            variant="primary"
+            className="mx-auto"
+            size="md"
+            disabled={isLoading || permissionStatus?.granted}>
+            {t('locationPermission.continue')}
+          </Button>
         </View>
       </View>
     </Screen>

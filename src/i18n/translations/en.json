@@ -237,8 +237,7 @@
   "locationPermission": {
     "title": "We need your location",
     "description": "Smart Tolls uses geolocation to show you on the map and build routes with the total cost of the trip calculated.",
-    "allowAccess": "Allow access",
-    "later": "Later"
+    "continue": "Continue"
   },
   "paywall": {
     "title": "Unlock Smart Tolls",
