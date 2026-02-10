@@ -383,30 +383,42 @@ export default function SubscriptionScreen() {
             ))}
           </View>
 
-          {/* Button. Main CTA always starts purchase when premium is not active. */}
-          <View style={{ marginTop: 12, width: '100%', alignItems: 'center' }}>
+          {/* Billed amount: most clear and conspicuous (Guideline 3.1.2). */}
+          <View style={{ marginTop: 16, width: '100%', alignItems: 'center' }}>
+            <Typography
+              variant="h1"
+              weight="700"
+              align="center"
+              className="text-foreground"
+              style={{
+                fontSize: 28,
+                lineHeight: 34,
+                letterSpacing: 0,
+              }}>
+              {t('paywall.billedPrice', { price: priceText })}
+            </Typography>
+            {/* Free trial / intro: subordinate position and size. */}
+            <Typography
+              weight="500"
+              align="center"
+              className="text-muted-foreground"
+              style={{
+                fontSize: 14,
+                lineHeight: 20,
+                letterSpacing: 0,
+                marginTop: 6,
+              }}>
+              {t('paywall.trialThenBilled', { price: priceText })}
+            </Typography>
+            {/* CTA: Subscribe (does not emphasize trial over billed amount). */}
             <Button
               variant="primary"
               onPress={handleContinue}
               disabled={!connected || isPurchasing}
-              className="w-full">
-              {isPurchasing ? t('paywall.processing') : t('paywall.startTrial')}
+              className="w-full"
+              style={{ marginTop: 16 }}>
+              {isPurchasing ? t('paywall.processing') : t('paywall.subscribe')}
             </Button>
-
-            {/* Price text - 8px margin */}
-            <View style={{ marginTop: 8, width: '100%' }}>
-              <Typography
-                weight="600"
-                align="center"
-                className="text-muted-foreground"
-                style={{
-                  fontSize: 15,
-                  lineHeight: 32,
-                  letterSpacing: 0,
-                }}>
-                {t('paywall.thenPerMonth', { price: priceText })}
-              </Typography>
-            </View>
 
             {/* Restore - always visible as secondary option (Apple requirement) */}
             <Pressable
